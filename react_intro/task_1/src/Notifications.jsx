@@ -1,11 +1,10 @@
 import './Notifications.css'
 
-const Notifications = () => {
-  return (
-    <div className="Notifications">
-      <p>Here is the list of notifications</p>
-    </div>
-  )
-}
+const Notification = () => {
+    return <div className="notification-items">
 
-export default Notifications
+        <p>Here is the list of notifications</p>
+
+    </div>
+}
+export default Notification;
