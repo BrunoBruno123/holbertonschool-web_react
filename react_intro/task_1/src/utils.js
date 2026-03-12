@@ -1,12 +1,9 @@
-export  function getCurrentYear()  {
-    const date = new Date()
-    return date.getFullYear();
+// Returns the current year
+export function getCurrentYear() {
+  return new Date().getFullYear();
 }
 
+// Returns the footer text
 export function getFooterCopy(isIndex) {
-    if (isIndex=== true){
-        return 'Holberton School'
-    }else {
-        return 'Holberton School main dashboard'
-    }
+  return isIndex ? "Holberton School" : "Holberton School main dashboard";
 }
