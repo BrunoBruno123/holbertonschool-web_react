@@ -5,5 +5,5 @@ export default {
         return {
             code: `module.exports = ${JSON.stringify(path.basename(sourcePath))};`,
         };
-    }
-}
+    },
+};
