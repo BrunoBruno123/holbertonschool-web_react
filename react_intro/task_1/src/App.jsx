@@ -1,5 +1,5 @@
 import holbertonLogo from './assets/holberton-logo.jpg'
-import Notifications from './Notifications'  // make sure this matches
+import Notifications from './Notifications' 
 import { getCurrentYear, getFooterCopy } from './utils'
 import './App.css'
 
@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <div className="root-notifications">
-        <Notifications />  {/* Now renders correctly */}
+        <Notifications />
       </div>
 
       <div className="App-header">
