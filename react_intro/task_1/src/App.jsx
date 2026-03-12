@@ -5,9 +5,7 @@ import Notifications from "./Notifications";
 import './App.css'
 
 const App = () => {
-  const date = new Date()
-
-
+  
   return (
     <>
       <div className="root-notifications">
