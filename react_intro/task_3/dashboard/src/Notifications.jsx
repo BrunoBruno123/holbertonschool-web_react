@@ -2,8 +2,8 @@ import './Notifications.css'
 import close from './assets/close-button.png'
 import { getLatestNotification } from './utils'
 
-const Notifications = () => {
-    return <div className="notification-items">
+const Notification = () => {
+    return <div className="notification-items   ">
         <p>Here is the list of notifications</p>
         <ul>
             <li data-priority="default">
@@ -15,10 +15,10 @@ const Notifications = () => {
             <li data-priority="urgent" dangerouslySetInnerHTML={{ __html: getLatestNotification() }}>
             </li>
         </ul>
-        <button aria-label='Close' style={{ position:"absolute", top:"10px", right:"10px"}} onClick={() => { console.log('Close button has been clicked') }}>
+        <button aria-label='Close' style={{ position:"absolute" , top:"10px", right:"10px"}} onClick={() => { console.log('Close button has been clicked to the console.') }} >
+
             <img src={close} style={{ width: '30px', height: '30px' }} />
         </button>
     </div>
 }
-
-export default Notifications;
+export default Notification;
