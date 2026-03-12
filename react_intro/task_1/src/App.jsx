@@ -4,6 +4,7 @@ import Notifications from './Notifications';
 import './App.css'
 
 const App = () => {
+  // eslint-disable-next-line no-unused-vars
   const date = new Date()
 
 
