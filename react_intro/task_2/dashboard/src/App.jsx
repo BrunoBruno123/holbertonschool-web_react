@@ -5,8 +5,6 @@ import Notifications from "./Notifications";
 import './App.css'
 
 const App = () => {
-
-
   return (
     <>
       <div className="root-notifications">
@@ -17,19 +15,18 @@ const App = () => {
         <h1 style={{ color: '#e1003c' }}>School dashboard</h1>
       </div>
       <div className='App-body'>
-
-        <p >Login to access the full dashboard</p>
-        <label htmlFor='email' >Email</label>
-        <input type='text'  id='email' />
-        <label htmlFor='password' >Password</label>
-        <input type='password'   id='password' />
+        <p>Login to access the full dashboard</p>
+        <label htmlFor="email">Email</label>
+        <input type="text" id="email" />
+        <label htmlFor="password">Password</label>
+        <input type="password" id="password" />
         <button>OK</button>
       </div>
       <div className='App-footer'>
-        <p >Copyright {getCurrentYear()} - {getFooterCopy(false)}</p>
+        <p>Copyright {getCurrentYear()} - {getFooterCopy(false)}</p>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
