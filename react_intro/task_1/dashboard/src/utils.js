@@ -8,4 +8,4 @@ export function getFooterCopy(isIndex) {
   } else {
     return 'Holberton School main dashboard';
   }
-}
+}``
