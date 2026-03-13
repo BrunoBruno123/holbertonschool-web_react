@@ -1,36 +1,37 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Notifications from './Notifications'; 
+import Notifications from './Notifications';
 
 describe('Notifications component', () => {
 
-    test('Test 1: Verify notification title exists (case insensitive)', () => {
-        render(<Notifications />); 
-        const titleElement = screen.getByText(/Here is the list of notifications/i);
-        expect(titleElement).toBeInTheDocument();
-    });
+  test('renders notification title', () => {
+    const { getByText } = render(<Notifications />);
+    expect(getByText(/Here is the list of notifications/i)).toBeInTheDocument();
+  });
 
-    test('Test 2: Verify close button exists', () => {
-        render(<Notifications />); 
-        const buttonElement = screen.getByRole('button');
-        expect(buttonElement).toBeInTheDocument();
-    });
+  test('renders a close button', () => {
+    const { container } = render(<Notifications />);
+    const button = container.querySelector('button');
+    expect(button).toBeInTheDocument();
+  });
 
-    test('Test 3: Verify three list items are rendered', () => {
-        render(<Notifications />); 
-        const listItems = screen.getAllByRole('listitem');
-        expect(listItems).toHaveLength(3);
-    });
+  test('renders 3 list items', () => {
+    const { container } = render(<Notifications />);
+    const items = container.querySelectorAll('li');
+    expect(items.length).toBe(3);
+  });
 
-    test('Test 4: Verify clicking close button logs message to console', () => {
-        const consoleSpy = jest.spyOn(console, 'log');
+  test('clicking close button logs message', () => {
+    const consoleSpy = jest.spyOn(console, 'log');
 
-        render(<Notifications />); 
-        const closeButton = screen.getByRole('button');
-        fireEvent.click(closeButton);
+    const { container } = render(<Notifications />);
+    const button = container.querySelector('button');
 
-        expect(consoleSpy).toHaveBeenCalledWith('Close button has been clicked');
+    fireEvent.click(button);
 
-        consoleSpy.mockRestore();
-    });
+    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
+
+    consoleSpy.mockRestore();
+  });
+
 });
