@@ -25,7 +25,7 @@ const Notifications = () => {
       <button
         aria-label="Close"
         style={{ position: "absolute", top: "10px", right: "10px" }}
-        onClick={() => console.log('Close button has been clicked')}
+        onClick={() => console.log("Close button has been clicked")}
       >
         <img
           src={close}
