@@ -38,8 +38,7 @@ test("renders 2 input elements (email and password)", () => {
 
 test("renders a button with OK text", () => {
     render(<App />);
-    const buttons = screen.getAllByRole('button');
-    const okButton = buttons.find(btn => btn.textContent.match(/OK/i));
-    expect(okButton).toHaveTextContent(/OK/i);
-    expect(okButton).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    expect(button).toHaveTextContent(/OK/i);
+    expect(button).toBeInTheDocument();
 });
