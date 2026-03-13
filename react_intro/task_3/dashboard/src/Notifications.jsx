@@ -8,13 +8,9 @@ const Notifications = () => {
       <p>Here is the list of notifications</p>
 
       <ul>
-        <li data-priority="default">
-          New course available
-        </li>
+        <li data-priority="default">New course available</li>
 
-        <li data-priority="urgent">
-          New resume available
-        </li>
+        <li data-priority="urgent">New resume available</li>
 
         <li
           data-priority="urgent"
@@ -30,7 +26,7 @@ const Notifications = () => {
         <img
           src={close}
           alt="close"
-          style={{ width: '30px', height: '30px' }}
+          style={{ width: "30px", height: "30px" }}
         />
       </button>
     </div>
