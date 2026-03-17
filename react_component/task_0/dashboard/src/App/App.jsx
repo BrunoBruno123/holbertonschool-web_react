@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import Notifications from "../Notifications/Notifications";
 import Header from '../Header/Header';
 import Login from '../Login/Login';
@@ -18,25 +18,21 @@ const notificationsList = [
   { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
 ];
 
-class App extends React.Component {
+class App extends Component {
   render() {
-    const { isLoggedIn } = this.props;
+    const { isLoggedIn = false } = this.props;
 
     return (
-      <React.Fragment>
+      <Fragment>
         <div className="root-notifications">
           <Notifications notifications={notificationsList} />
         </div>
         <Header />
         {isLoggedIn ? <CourseList courses={coursesList} /> : <Login />}
         <Footer />
-      </React.Fragment>
+      </Fragment>
     );
   }
 }
-
-App.defaultProps = {
-  isLoggedIn: false,
-};
 
 export default App;
