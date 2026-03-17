@@ -17,6 +17,15 @@ const CourseListRow = ({ isHeader = false, textFirstCell = '', textSecondCell = 
     );
   }
 
+  // ✅ FIX HERE
+  if (textSecondCell === null) {
+    return (
+      <tr>
+        <td colSpan={2}>{textFirstCell}</td>
+      </tr>
+    );
+  }
+
   return (
     <tr>
       <td>{textFirstCell}</td>
