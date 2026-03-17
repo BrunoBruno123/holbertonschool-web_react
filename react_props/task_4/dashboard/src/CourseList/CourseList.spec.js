@@ -12,15 +12,15 @@ const courses = [
 describe('CourseList component', () => {
 
   test('renders 5 rows when given an array of courses', () => {
-    const { container } = render(<CourseList courses={courses} />);
-    const rows = container.querySelectorAll('tr');
-    expect(rows.length).toBe(5);
-  });
+  const { container } = render(<CourseList courses={courses} />);
+  const rows = container.querySelectorAll('tr');
+  expect(rows.length).toBe(5);
+});
 
-  test('renders 1 row when given an empty array', () => {
-    const { container } = render(<CourseList courses={[]} />);
-    const rows = container.querySelectorAll('tr');
-    expect(rows.length).toBe(3);
-  });
+test('renders 1 row when given an empty array', () => {
+  const { container } = render(<CourseList courses={[]} />);
+  const rows = container.querySelectorAll('tr');
+  expect(rows.length).toBe(1);
+});
 
 });
