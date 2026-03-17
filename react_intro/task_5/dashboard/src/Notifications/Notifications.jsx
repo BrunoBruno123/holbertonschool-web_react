@@ -1,5 +1,5 @@
 import './Notifications.css'
-import close from './assets/close-button.png'
+import close from '../assets/close-button.png'
 import { getLatestNotification } from './utils'
 
 const Notifications = () => {

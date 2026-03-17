@@ -1,6 +1,6 @@
-import logo from './assets/holberton-logo.jpg';
-import { getCurrentYear, getFooterCopy } from "./utils";
-import Notifications from "./Notifications";
+import logo from '../assets/holberton-logo.jpg';
+import { getCurrentYear, getFooterCopy } from "../utils/utils";
+import Notifications from "../Notifications/Notifications";
 
 import './App.css'
 
