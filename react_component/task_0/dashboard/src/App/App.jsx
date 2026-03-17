@@ -20,19 +20,23 @@ const notificationsList = [
 
 class App extends React.Component {
   render() {
-    const { isLoggedIn = false } = this.props;
+    const { isLoggedIn } = this.props;
 
     return (
-      <>
+      <React.Fragment>
         <div className="root-notifications">
           <Notifications notifications={notificationsList} />
         </div>
         <Header />
         {isLoggedIn ? <CourseList courses={coursesList} /> : <Login />}
         <Footer />
-      </>
+      </React.Fragment>
     );
   }
 }
+
+App.defaultProps = {
+  isLoggedIn: false,
+};
 
 export default App;
