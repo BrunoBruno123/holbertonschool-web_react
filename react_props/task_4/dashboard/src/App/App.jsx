@@ -18,9 +18,7 @@ const notificationsList = [
   { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
 ];
 
-const App = () => {
-  const isLoggedIn = false;
-
+const App = ({ isLoggedIn = false }) => {
   return (
     <Fragment>
       <div className="root-notifications">
