@@ -15,6 +15,7 @@ test('clicking notification logs correct message', () => {
   );
 
   const lis = container.querySelectorAll('li');
+
   fireEvent.click(lis[0]);
   expect(consoleSpy).toHaveBeenCalledWith(
     'Notification 1 has been marked as read'
@@ -28,38 +29,37 @@ test('clicking notification logs correct message', () => {
   consoleSpy.mockRestore();
 });
 
-test('Notifications does not re-render if notifications length stays the same', () => {
-  const { rerender, getByText } = render(
-    <Notifications displayDrawer={true} notifications={notifications} />
-  );
-
-  const sameNotifications = [
-    { id: 1, type: 'default', value: 'New course available' },
-    { id: 2, type: 'urgent', value: 'New resume available' },
-  ];
-
-  rerender(
-    <Notifications displayDrawer={true} notifications={sameNotifications} />
-  );
-
-  expect(getByText('New course available')).toBeInTheDocument();
-  expect(getByText('New resume available')).toBeInTheDocument();
-});
-
-test('Notifications re-renders when notifications length changes', () => {
+test('does not re-render if notifications length stays the same', () => {
   const { rerender, queryByText } = render(
     <Notifications displayDrawer={true} notifications={notifications} />
   );
 
-  const moreNotifications = [
-    { id: 1, type: 'default', value: 'New course available' },
-    { id: 2, type: 'urgent', value: 'New resume available' },
-    { id: 3, type: 'urgent', value: 'New deadline urgent' },
+  const newNotifications = [
+    { id: 3, type: 'default', value: 'Test 1' },
+    { id: 4, type: 'urgent', value: 'Test 2' },
   ];
 
   rerender(
-    <Notifications displayDrawer={true} notifications={moreNotifications} />
+    <Notifications displayDrawer={true} notifications={newNotifications} />
   );
 
-  expect(queryByText('New deadline urgent')).toBeInTheDocument();
+  // Should NOT update → old content still exists
+  expect(queryByText('New course available')).toBeInTheDocument();
+});
+
+test('re-renders if notifications length changes', () => {
+  const { rerender, queryByText } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
+
+  const newNotifications = [
+    ...notifications,
+    { id: 3, type: 'default', value: 'New notification' },
+  ];
+
+  rerender(
+    <Notifications displayDrawer={true} notifications={newNotifications} />
+  );
+
+  expect(queryByText('New notification')).toBeInTheDocument();
 });
