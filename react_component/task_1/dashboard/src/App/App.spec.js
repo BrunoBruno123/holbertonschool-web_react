@@ -1,79 +1,79 @@
-/* eslint-disable no-undef */
-import { cleanup, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import App from "./App";
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import App from './App';
 
-global.alert = jest.fn();
+test('renders h1 with School Dashboard text', () => {
+  render(<App />);
+  expect(screen.getByRole('heading')).toHaveTextContent(/School dashboard/i);
+});
 
-describe("App Component", () => {
-    beforeEach(() => {
+test('renders correct text in body and footer paragraphs', () => {
+  render(<App />);
+  expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+  expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+});
 
-        render(<App />);
-    });
+test('renders an image', () => {
+  render(<App />);
+  const image = screen.getByAltText(/holberton logo/i);
+  expect(image).toBeInTheDocument();
+});
 
-    it.skip("Renders Header component", () => {
-        const heading = screen.getByRole("heading", {
-            level: 1,
-            name: /school dashboard/i,
-        });
-        expect(heading).toBeInTheDocument();
-    });
+test('renders 2 labels Email and Password', () => {
+  render(<App />);
+  expect(screen.getByText(/email/i)).toBeInTheDocument();
+  expect(screen.getByText(/password/i)).toBeInTheDocument();
+});
 
+test('renders 2 input elements (email and password)', () => {
+  render(<App />);
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+});
 
-    it.skip("Renders Login Component", () => {
-        const loginText = screen.getByText(/Login to access the full dashboard/i);
-        expect(loginText).toBeInTheDocument();
-    });
+test('renders a button with OK text', () => {
+  render(<App />);
+  const buttons = screen.getAllByRole('button');
+  const okButton = buttons.find(b => b.textContent.match(/OK/i));
+  expect(okButton).toBeInTheDocument();
+});
 
-    it.skip("Renders Footer Component", () => {
-        expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
-    });
+describe('when isLoggedIn is false', () => {
+  test('renders the Login form', () => {
+    render(<App />);
+    expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+  });
+});
 
+describe('when isLoggedIn is true', () => {
+  test('renders the CourseList table', () => {
+    render(<App isLoggedIn={true} />);
+    expect(document.querySelector('#CourseList')).toBeInTheDocument();
+  });
+});
 
-    it.skip("CourseList is rendered when isLoggedIn is false", () => {
-        cleanup();
+// ✅ Keyboard event tests for Ctrl + H
+describe('Testing keyboard events', () => {
+  test('calls logOut when ctrl + h is pressed', () => {
+    const logOutMock = jest.fn();
+    render(<App logOut={logOutMock} />);
 
-        const rendered = render(<App />);
-        const container = rendered.container;
+    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
 
+    expect(logOutMock).toHaveBeenCalledTimes(1);
+  });
 
-        const loginComponent = container.querySelector(".App-body");
+  test('calls alert when ctrl + h is pressed', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const logOutMock = jest.fn();
 
-        expect(loginComponent).toBeInTheDocument();
-    });
+    render(<App logOut={logOutMock} />);
 
-    it.skip("CourseList is rendered when isLoggedIn is true", () => {
-        cleanup();
+    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
 
-        const rendered = render(<App isLoggedIn={true} />);
-        const container = rendered.container;
+    expect(alertMock).toHaveBeenCalledWith('Logging you out');
 
-        const courseList = container.querySelector("#CourseList");
-
-        expect(courseList).toBeInTheDocument();
-    });
-
-    it("Logout function gets called once", async () => {
-        cleanup();
-
-        const logOut = jest.fn();
-
-        render(<App logOut={logOut} />);
-
-        await userEvent.keyboard("{Control>}h{/Control}");
-
-        expect(logOut).toBeCalledTimes(1);
-    })
-
-    it("Alert function is called", async () => {
-        cleanup();
-
-        render(<App />);
-
-
-        await userEvent.keyboard("{Control>}h{/Control}");
-
-        expect(global.alert).toHaveBeenCalledWith("Logging you out");
-
-    })
+    alertMock.mockRestore();
+  });
 });
