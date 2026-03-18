@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from './App';
 
@@ -49,17 +48,19 @@ describe('when isLoggedIn is false', () => {
 
 describe('when isLoggedIn is true', () => {
   test('renders the CourseList table', () => {
-    const { container } = render(<App isLoggedIn={true} />);
-    expect(container.querySelector('#CourseList')).toBeInTheDocument();
+    render(<App isLoggedIn={true} />);
+    expect(document.querySelector('#CourseList')).toBeInTheDocument();
   });
 });
 
 describe('Ctrl+H keyboard shortcut', () => {
   test('calls logOut function when Ctrl+H is pressed', () => {
     const logOut = jest.fn();
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
     render(<App logOut={logOut} />);
     fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
     expect(logOut).toHaveBeenCalledTimes(1);
+    alertMock.mockRestore();
   });
 
   test('calls alert with Logging you out when Ctrl+H is pressed', () => {
