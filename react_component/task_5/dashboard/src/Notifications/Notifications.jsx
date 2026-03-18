@@ -5,9 +5,7 @@ import NotificationItem from './NotificationItem';
 
 class Notifications extends Component {
   shouldComponentUpdate(nextProps) {
-    const nextNotifications = nextProps.notifications || [];
-    const currentNotifications = this.props.notifications || [];
-    return nextNotifications.length !== currentNotifications.length;
+    return (nextProps.notifications || []).length !== (this.props.notifications || []).length;
   }
 
   markAsRead = (id) => {
@@ -19,6 +17,7 @@ class Notifications extends Component {
 
     return (
       <div className="Notifications">
+        <div className="notification-title">Your notifications</div>
         {displayDrawer && (
           <div className="notification-items">
             <p>Here is the list of notifications</p>
