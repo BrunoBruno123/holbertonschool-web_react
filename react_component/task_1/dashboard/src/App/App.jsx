@@ -19,6 +19,10 @@ const notificationsList = [
 ];
 
 class App extends Component {
+  static defaultProps = {
+    logOut: () => {},
+  };
+
   handleKeyDown = (e) => {
     if (e.ctrlKey && e.key === 'h') {
       alert('Logging you out');
@@ -29,6 +33,7 @@ class App extends Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
   }
+
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
@@ -49,9 +54,5 @@ class App extends Component {
     );
   }
 }
-
-App.defaultProps = {
-  logOut: () => {},
-};
 
 export default App;
