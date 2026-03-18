@@ -1,48 +1,31 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class NotificationItem extends Component {
-  handleClick = () => {
-    const { markAsRead, id } = this.props;
+const NotificationItem = ({ type, html, value, markAsRead, id }) => {
+  const style = {
+    color: type === 'urgent' ? 'red' : 'blue',
+    cursor: 'pointer',
+  };
+
+  const handleClick = () => {
     if (markAsRead) markAsRead(id);
   };
 
-  // Only re-render if relevant props change
-  shouldComponentUpdate(nextProps) {
-    return (
-      nextProps.type !== this.props.type ||
-      nextProps.value !== this.props.value ||
-      nextProps.html !== this.props.html
-    );
-  }
-
-  render() {
-    const { type, html, value } = this.props;
-    const style = {
-      color: type === 'urgent' ? 'red' : 'blue',
-      cursor: 'pointer',
-    };
-
-    if (html) {
-      return (
-        <li
-          data-notification-type={type}
-          style={style}
-          dangerouslySetInnerHTML={html}
-          onClick={this.handleClick}
-        />
-      );
-    }
-
+  if (html) {
     return (
       <li
         data-notification-type={type}
         style={style}
-        onClick={this.handleClick}
-      >
-        {value}
-      </li>
+        dangerouslySetInnerHTML={html}
+        onClick={handleClick}
+      />
     );
   }
-}
 
-export default NotificationItem;
+  return (
+    <li data-notification-type={type} style={style} onClick={handleClick}>
+      {value}
+    </li>
+  );
+};
+
+export default React.memo(NotificationItem);
