@@ -1,47 +1,54 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import App from "./App";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import App from './App';
 
-describe("App Component", () => {
-    beforeEach(() => {
-        render(<App />);
-    });
+test('renders h1 with School Dashboard text', () => {
+  render(<App />);
+  expect(screen.getByRole('heading')).toHaveTextContent(/School dashboard/i);
+});
 
-    it("Renders Header component", () => {
-        const heading = screen.getByRole("heading", {
-            level: 1,
-            name: /school dashboard/i,
-        });
-        expect(heading).toBeInTheDocument();
-    });
+test('renders correct text in body and footer paragraphs', () => {
+  render(<App />);
+  expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+  expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+});
 
-    it("Renders Login Component", () => {
-        const loginText = screen.getByText(/Login to access the full dashboard/i);
-        expect(loginText).toBeInTheDocument();
-    });
+test('renders an image', () => {
+  render(<App />);
+  const image = screen.getByAltText(/holberton logo/i);
+  expect(image).toBeInTheDocument();
+});
 
-    it("Renders Footer Component", () => {
-        expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
-    });
+test('renders 2 labels Email and Password', () => {
+  render(<App />);
+  expect(screen.getByText(/email/i)).toBeInTheDocument();
+  expect(screen.getByText(/password/i)).toBeInTheDocument();
+});
 
-    it("CourseList is rendered when isLoggedIn is false", () => {
-        cleanup();
+test('renders 2 input elements (email and password)', () => {
+  render(<App />);
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+});
 
-        const rendered = render(<App />);
-        const container = rendered.container;
+test('renders a button with OK text', () => {
+  render(<App />);
+  const buttons = screen.getAllByRole('button');
+  const okButton = buttons.find(b => b.textContent.match(/OK/i));
+  expect(okButton).toBeInTheDocument();
+});
 
-        const loginComponent = container.querySelector(".App-body");
+describe('when isLoggedIn is false', () => {
+  test('renders the Login form', () => {
+    render(<App />);
+    expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+  });
+});
 
-        expect(loginComponent).toBeInTheDocument();
-    });
-
-    it("CourseList is rendered when isLoggedIn is true", () => {
-        cleanup();
-
-        const rendered = render(<App isLoggedIn={true} />);
-        const container = rendered.container;
-
-        const courseList = container.querySelector("#CourseList");
-
-        expect(courseList).toBeInTheDocument();
-    });
+describe('when isLoggedIn is true', () => {
+  test('renders the CourseList table', () => {
+    render(<App isLoggedIn={true} />);
+    expect(document.querySelector('#CourseList')).toBeInTheDocument();
+  });
 });
