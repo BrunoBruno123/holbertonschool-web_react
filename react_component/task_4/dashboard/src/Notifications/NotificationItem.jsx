@@ -1,10 +1,19 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 
-class NotificationItem extends PureComponent {
+class NotificationItem extends Component {
   handleClick = () => {
     const { markAsRead, id } = this.props;
     if (markAsRead) markAsRead(id);
   };
+
+  // Only re-render if relevant props change
+  shouldComponentUpdate(nextProps) {
+    return (
+      nextProps.type !== this.props.type ||
+      nextProps.value !== this.props.value ||
+      nextProps.html !== this.props.html
+    );
+  }
 
   render() {
     const { type, html, value } = this.props;
