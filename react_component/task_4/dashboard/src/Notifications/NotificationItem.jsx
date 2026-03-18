@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
 class NotificationItem extends PureComponent {
   handleClick = () => {
@@ -35,5 +36,17 @@ class NotificationItem extends PureComponent {
     );
   }
 }
+
+NotificationItem.propTypes = {
+  id: PropTypes.number,
+  type: PropTypes.string,
+  value: PropTypes.string,
+  html: PropTypes.shape({ __html: PropTypes.string }),
+  markAsRead: PropTypes.func,
+};
+
+NotificationItem.defaultProps = {
+  type: 'default',
+};
 
 export default NotificationItem;
