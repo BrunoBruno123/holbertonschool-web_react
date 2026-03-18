@@ -13,7 +13,7 @@ describe('App component', () => {
 
   test('renders Header component', () => {
     render(<App />);
-    expect(screen.getByText(/School Dashboard/i)).toBeInTheDocument(); // adjust to your header text
+    expect(screen.getByText(/School Dashboard/i)).toBeInTheDocument(); 
   });
 
   test('renders CourseList when isLoggedIn is true', () => {
@@ -34,7 +34,7 @@ describe('App component', () => {
     expect(mockLogOut).toHaveBeenCalled();
   });
 
-  // **New test added for Task 4**
+
   test('renders News from the School section with paragraph', () => {
     render(<App />);
     const heading = screen.getByRole('heading', { level: 2, name: /News from the School/i });
