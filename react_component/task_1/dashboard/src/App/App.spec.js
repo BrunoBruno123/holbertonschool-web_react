@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from './App';
+
 
 test('renders h1 with School Dashboard text', () => {
   render(<App />);
@@ -53,24 +54,33 @@ describe('when isLoggedIn is true', () => {
   });
 });
 
-// ✅ Keyboard event tests for Ctrl + H
-describe('Testing keyboard events', () => {
-  test('calls logOut when ctrl + h is pressed', () => {
+describe('Ctrl + H behavior', () => {
+  test('calls logOut when Ctrl + H is pressed', () => {
     const logOutMock = jest.fn();
     render(<App logOut={logOutMock} />);
 
-    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
+    const event = new KeyboardEvent('keydown', {
+      key: 'h',
+      ctrlKey: true,
+    });
+
+    window.dispatchEvent(event);
 
     expect(logOutMock).toHaveBeenCalledTimes(1);
   });
 
-  test('calls alert when ctrl + h is pressed', () => {
+  test('calls alert with "Logging you out"', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
     const logOutMock = jest.fn();
 
     render(<App logOut={logOutMock} />);
 
-    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
+    const event = new KeyboardEvent('keydown', {
+      key: 'h',
+      ctrlKey: true,
+    });
+
+    window.dispatchEvent(event);
 
     expect(alertMock).toHaveBeenCalledWith('Logging you out');
 
