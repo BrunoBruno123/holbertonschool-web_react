@@ -53,27 +53,19 @@ describe('when isLoggedIn is true', () => {
   });
 });
 
-// ✅ Keyboard event tests for Ctrl + H
-describe('Testing keyboard events', () => {
-  test('calls logOut when ctrl + h is pressed', () => {
-    const logOutMock = jest.fn();
-    render(<App logOut={logOutMock} />);
-
-    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
-
-    expect(logOutMock).toHaveBeenCalledTimes(1);
+describe('when control and h keys are pressed', () => {
+  test('calls the logOut prop function once', () => {
+    const logOut = jest.fn();
+    render(<App logOut={logOut} />);
+    fireEvent.keyDown(document, { key: 'h', ctrlKey: true });
+    expect(logOut).toHaveBeenCalledTimes(1);
   });
 
-  test('calls alert when ctrl + h is pressed', () => {
+  test('calls alert with "Logging you out"', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    const logOutMock = jest.fn();
-
-    render(<App logOut={logOutMock} />);
-
-    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
-
+    render(<App />);
+    fireEvent.keyDown(document, { key: 'h', ctrlKey: true });
     expect(alertMock).toHaveBeenCalledWith('Logging you out');
-
     alertMock.mockRestore();
   });
 });
