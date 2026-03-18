@@ -1,0 +1,15 @@
+.App-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e1003c;
+}
+.App-body {
+  padding: 20px;
+  min-height: 300px;
+}
+
+.App-footer {
+  border-top: 2px solid #e1003c;
+  padding: 10px 20px;
+  font-style: italic;
+}
