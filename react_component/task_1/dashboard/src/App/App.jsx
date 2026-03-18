@@ -19,17 +19,18 @@ const notificationsList = [
 ];
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-  }
+  // ✅ default prop
+  static defaultProps = {
+    logOut: () => {},
+  };
 
-  handleKeyDown(e) {
-    if ('key' in e && e.ctrlKey && e.key === 'h') {
+  handleKeyDown = (event) => {
+    // check Ctrl + H
+    if (event.ctrlKey && event.key === 'h') {
       alert('Logging you out');
       this.props.logOut();
     }
-  }
+  };
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -41,6 +42,7 @@ class App extends Component {
 
   render() {
     const { isLoggedIn = false } = this.props;
+
     return (
       <Fragment>
         <div className="root-notifications">
@@ -53,9 +55,5 @@ class App extends Component {
     );
   }
 }
-
-App.defaultProps = {
-  logOut: () => {},
-};
 
 export default App;
