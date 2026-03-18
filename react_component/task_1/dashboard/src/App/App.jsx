@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import Notifications from "../Notifications/Notifications";
 import Header from '../Header/Header';
 import Login from '../Login/Login';
@@ -25,7 +26,7 @@ class App extends Component {
   }
 
   handleKeyDown(e) {
-    if (e.ctrlKey && e.key === 'h') {
+    if ('key' in e && e.ctrlKey && e.key === 'h') {
       alert('Logging you out');
       this.props.logOut();
     }
@@ -54,8 +55,14 @@ class App extends Component {
   }
 }
 
+App.propTypes = {
+  logOut: PropTypes.func,
+  isLoggedIn: PropTypes.bool,
+};
+
 App.defaultProps = {
   logOut: () => {},
+  isLoggedIn: false,
 };
 
 export default App;
