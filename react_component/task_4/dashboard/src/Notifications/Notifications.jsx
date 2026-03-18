@@ -4,6 +4,10 @@ import close from '../assets/close-button.png';
 import NotificationItem from './NotificationItem';
 
 class Notifications extends Component {
+  shouldComponentUpdate(nextProps) {
+    return nextProps.notifications.length !== this.props.notifications.length;
+  }
+
   markAsRead = (id) => {
     console.log(`Notification ${id} has been marked as read`);
   };
@@ -13,7 +17,6 @@ class Notifications extends Component {
 
     return (
       <div className="Notifications">
-        <div className="notification-title">Your notifications</div>
         {displayDrawer && (
           <div className="notification-items">
             <p>Here is the list of notifications</p>
@@ -36,9 +39,7 @@ class Notifications extends Component {
             <button
               aria-label="Close"
               style={{ position: 'absolute', top: '10px', right: '10px' }}
-              onClick={() =>
-                console.log('Close button has been clicked')
-              }
+              onClick={() => console.log('Close button has been clicked')}
             >
               <img
                 src={close}
