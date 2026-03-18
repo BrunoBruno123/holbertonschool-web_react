@@ -1,31 +1,39 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 
-const NotificationItem = ({ type, html, value, markAsRead, id }) => {
-  const style = {
-    color: type === 'urgent' ? 'red' : 'blue',
-    cursor: 'pointer',
-  };
-
-  const handleClick = () => {
+class NotificationItem extends PureComponent {
+  handleClick = () => {
+    const { markAsRead, id } = this.props;
     if (markAsRead) markAsRead(id);
   };
 
-  if (html) {
+  render() {
+    const { type, html, value } = this.props;
+    const style = {
+      color: type === 'urgent' ? 'red' : 'blue',
+      cursor: 'pointer',
+    };
+
+    if (html) {
+      return (
+        <li
+          data-notification-type={type}
+          style={style}
+          dangerouslySetInnerHTML={html}
+          onClick={this.handleClick}
+        />
+      );
+    }
+
     return (
       <li
         data-notification-type={type}
         style={style}
-        dangerouslySetInnerHTML={html}
-        onClick={handleClick}
-      />
+        onClick={this.handleClick}
+      >
+        {value}
+      </li>
     );
   }
+}
 
-  return (
-    <li data-notification-type={type} style={style} onClick={handleClick}>
-      {value}
-    </li>
-  );
-};
-
-export default React.memo(NotificationItem);
+export default NotificationItem;
