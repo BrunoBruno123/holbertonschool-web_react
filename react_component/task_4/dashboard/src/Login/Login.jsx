@@ -15,7 +15,5 @@ const Login = () => {
   );
 };
 
-// Named wrapped component for Fast Refresh
 const LoginWithLogging = WithLogging(Login);
-
 export default LoginWithLogging;

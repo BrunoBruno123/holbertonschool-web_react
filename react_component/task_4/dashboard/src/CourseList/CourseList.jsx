@@ -32,5 +32,4 @@ const CourseList = ({ courses = [] }) => {
 };
 
 const CourseListWithLogging = WithLogging(CourseList);
-
 export default CourseListWithLogging;
