@@ -9,20 +9,6 @@ import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBot
 import NewContext from '../Context/context';
 import './App.css';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const coursesList = [
-  { id: 1, name: 'ES6', credit: 60 },
-  { id: 2, name: 'Webpack', credit: 20 },
-  { id: 3, name: 'React', credit: 40 },
-];
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const notificationsList = [
-  { id: 1, type: 'default', value: 'New course available' },
-  { id: 2, type: 'urgent', value: 'New resume available' },
-  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
-];
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -40,8 +26,16 @@ class App extends Component {
         isLoggedIn: false,
       },
       logOut: this.logOut,
-      notifications: [...notificationsList],
-      courses: [...coursesList],
+      notifications: [
+        { id: 1, type: 'default', value: 'New course available' },
+        { id: 2, type: 'urgent', value: 'New resume available' },
+        { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
+      ],
+      courses: [
+        { id: 1, name: 'ES6', credit: 60 },
+        { id: 2, name: 'Webpack', credit: 20 },
+        { id: 3, name: 'React', credit: 40 },
+      ],
     };
   }
 
