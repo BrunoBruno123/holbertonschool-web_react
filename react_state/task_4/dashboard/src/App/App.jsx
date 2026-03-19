@@ -27,31 +27,75 @@ class App extends Component {
     super(props);
     this.logIn = this.logIn.bind(this);
     this.logOut = this.logOut.bind(this);
-    this.markNotificationAsRead = this.markNotificationAsRead.bind(this); // new
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
     this.handleHideDrawer = this.handleHideDrawer.bind(this);
-
+    this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
     this.state = {
       displayDrawer: false,
-      user: { email: '', password: '', isLoggedIn: false },
+      user: {
+        email: '',
+        password: '',
+        isLoggedIn: false,
+      },
       logOut: this.logOut,
-      notifications: [...notificationsList], // added
-      courses: [...coursesList],             // added
+      notifications: [...notificationsList],
+      courses: [...coursesList],
     };
+  }
+
+  handleKeyDown(e) {
+    if ('key' in e && e.ctrlKey && e.key === 'h') {
+      alert('Logging you out');
+      this.logOut();
+    }
+  }
+
+  handleDisplayDrawer() {
+    this.setState({ displayDrawer: true });
+  }
+
+  handleHideDrawer() {
+    this.setState({ displayDrawer: false });
+  }
+
+  logIn(email, password) {
+    this.setState({
+      user: {
+        email,
+        password,
+        isLoggedIn: true,
+      },
+    });
+  }
+
+  logOut() {
+    this.setState({
+      user: {
+        email: '',
+        password: '',
+        isLoggedIn: false,
+      },
+    });
   }
 
   markNotificationAsRead(id) {
     console.log(`Notification ${id} has been marked as read`);
     this.setState((prevState) => ({
-      notifications: prevState.notifications.filter((notif) => notif.id !== id),
+      notifications: prevState.notifications.filter((n) => n.id !== id),
     }));
   }
 
-  // ... rest of App remains the same
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  }
 
   render() {
-    const { displayDrawer, user, logOut, notifications } = this.state;
+    const { displayDrawer, user, logOut, notifications, courses } = this.state;
 
     return (
       <NewContext.Provider value={{ user, logOut }}>
@@ -62,18 +106,22 @@ class App extends Component {
               displayDrawer={displayDrawer}
               handleDisplayDrawer={this.handleDisplayDrawer}
               handleHideDrawer={this.handleHideDrawer}
-              markNotificationAsRead={this.markNotificationAsRead} // pass as prop
+              markNotificationAsRead={this.markNotificationAsRead}
             />
           </div>
           <Header />
 
           {user.isLoggedIn ? (
             <BodySectionWithMarginBottom title="Course list">
-              <CourseList courses={this.state.courses} />
+              <CourseList courses={courses} />
             </BodySectionWithMarginBottom>
           ) : (
             <BodySectionWithMarginBottom title="Log in to continue">
-              <Login logIn={this.logIn} email={user.email} password={user.password} />
+              <Login
+                logIn={this.logIn}
+                email={user.email}
+                password={user.password}
+              />
             </BodySectionWithMarginBottom>
           )}
 

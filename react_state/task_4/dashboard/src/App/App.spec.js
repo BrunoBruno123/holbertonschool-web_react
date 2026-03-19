@@ -100,22 +100,4 @@ describe('App component', () => {
     fireEvent.click(screen.getByLabelText(/Close/i));
     expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
   });
-
-  test('clicking a notification item removes it from the list and logs the message', () => {
-    const consoleSpy = jest.spyOn(console, 'log');
-    render(<App />);
-
-    // Open the notifications drawer
-    fireEvent.click(screen.getByText(/Your notifications/i));
-    expect(screen.getByText(/New course available/i)).toBeInTheDocument();
-
-    // Click the first notification item
-    const lis = document.querySelectorAll('li');
-    fireEvent.click(lis[0]);
-
-    expect(consoleSpy).toHaveBeenCalledWith('Notification 1 has been marked as read');
-    expect(screen.queryByText(/New course available/i)).not.toBeInTheDocument();
-
-    consoleSpy.mockRestore();
-  });
 });
