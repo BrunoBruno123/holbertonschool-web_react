@@ -2,39 +2,34 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Footer from './Footer';
-// eslint-disable-next-line no-unused-vars
-import newContext from '../Context/context';
+import NewContext from '../Context/context';
 
-const renderWithContext = (contextValue) => {
-  return render(
-    <newContext.Provider value={contextValue}>
+// Helper: render Footer with a given user value via context
+const renderWithContext = (user) =>
+  render(
+    <NewContext.Provider value={{ user }}>
       <Footer />
-    </newContext.Provider>
+    </NewContext.Provider>
   );
-};
 
 test('renders Footer without crashing', () => {
-  render(<Footer />);
+  renderWithContext({ isLoggedIn: false });
 });
 
-test('renders correct copyright text when isIndex is true', () => {
-  render(<Footer />);
+test('renders correct copyright text', () => {
+  renderWithContext({ isLoggedIn: false });
   const year = new Date().getFullYear();
-  expect(screen.getByText(`Copyright ${year} - Holberton School`)).toBeInTheDocument();
+  expect(
+    screen.getByText(`Copyright ${year} - Holberton School`)
+  ).toBeInTheDocument();
 });
 
 test('does not display "Contact us" link when user is logged out', () => {
-  renderWithContext({
-    user: { email: '', password: '', isLoggedIn: false },
-    logOut: () => {},
-  });
+  renderWithContext({ isLoggedIn: false });
   expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
 });
 
 test('displays "Contact us" link when user is logged in', () => {
-  renderWithContext({
-    user: { email: 'user@example.com', password: 'password123', isLoggedIn: true },
-    logOut: () => {},
-  });
+  renderWithContext({ isLoggedIn: true });
   expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
 });
