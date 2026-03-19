@@ -8,7 +8,7 @@ const mockLogOut = jest.fn();
 describe('App component', () => {
   test('renders notifications', () => {
     render(<App />);
-    expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
+    expect(document.querySelector('.Notifications')).toBeInTheDocument();
   });
 
   test('renders Header component', () => {
