@@ -25,11 +25,8 @@ class App extends Component {
   }
 
   handleKeyDown(e) {
-    if (e.ctrlKey && e.key && e.key.toLowerCase() === 'h') {
-      // Only call alert if it exists (prevents jsdom error)
-      if (typeof window.alert === 'function') {
-        window.alert('Logging you out');
-      }
+    if ('key' in e && e.ctrlKey && e.key === 'h') {
+      alert('Logging you out');
       this.props.logOut();
     }
   }
