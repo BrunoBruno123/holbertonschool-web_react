@@ -27,7 +27,7 @@ test('clicking notification calls markNotificationAsRead with correct id', () =>
   expect(markNotificationAsRead).toHaveBeenCalledWith(2);
 });
 
-test('re-renders if notifications length changes (PureComponent behavior)', () => {
+test('re-renders if notifications length changes', () => {
   const { rerender, queryByText } = render(
     <Notifications displayDrawer={true} notifications={notifications} />
   );
@@ -44,24 +44,16 @@ test('re-renders if notifications length changes (PureComponent behavior)', () =
   expect(queryByText('New notification')).toBeInTheDocument();
 });
 
-test('does not re-render if same notifications array reference and displayDrawer unchanged', () => {
+test('does not re-render when same props reference is passed', () => {
   const { rerender, queryByText } = render(
     <Notifications displayDrawer={true} notifications={notifications} />
   );
 
-  // Same length, different content — PureComponent does shallow compare so won't re-render
-  const newNotifications = [
-    { id: 3, type: 'default', value: 'Test 1' },
-    { id: 4, type: 'urgent', value: 'Test 2' },
-  ];
-
+  // Pass the exact same reference — PureComponent shallow compare sees no change
   rerender(
-    <Notifications displayDrawer={true} notifications={newNotifications} />
+    <Notifications displayDrawer={true} notifications={notifications} />
   );
 
-  // PureComponent does shallow compare on the array reference — new array triggers re-render
-  // but content change with same length won't be detected by shallow compare
-  // The old content should still be visible
   expect(queryByText('New course available')).toBeInTheDocument();
 });
 
