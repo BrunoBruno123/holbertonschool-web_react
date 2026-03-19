@@ -1,23 +1,22 @@
-import './Notifications.css'
-import close from './assets/close-button.png'
-import { getLatestNotification } from './utils'
+import React from 'react';
+import './Notifications.css';
+import close from '../assets/close-button.png';
+import NotificationItem from './NotificationItem';
 
-const Notifications = () => {
+const Notifications = ({ notifications = [] }) => {
   return (
     <div className="notification-items">
       <p>Here is the list of notifications</p>
-
       <ul>
-        <li data-priority="default">New course available</li>
-
-        <li data-priority="urgent">New resume available</li>
-
-        <li
-          data-priority="urgent"
-          dangerouslySetInnerHTML={{ __html: getLatestNotification() }}
-        ></li>
+        {notifications.map((notif) => (
+          <NotificationItem
+            key={notif.id}
+            type={notif.type}
+            value={notif.value}
+            html={notif.html}
+          />
+        ))}
       </ul>
-
       <button
         aria-label="Close"
         style={{ position: "absolute", top: "10px", right: "10px" }}
@@ -30,7 +29,7 @@ const Notifications = () => {
         />
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default Notifications
+export default Notifications;
