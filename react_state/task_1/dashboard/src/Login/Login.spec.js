@@ -7,12 +7,11 @@ test('renders Login without crashing', () => {
   render(<Login />);
 });
 
-test('renders 2 labels, 2 inputs (email + password), and 1 submit input', () => {
+test('renders 2 labels, 2 inputs (email + password), and 1 submit button', () => {
   const { container } = render(<Login />);
   expect(container.querySelectorAll('label').length).toBe(2);
-  // 3 inputs: email, password, submit
-  const inputs = container.querySelectorAll('input');
-  expect(inputs.length).toBe(3);
+  expect(container.querySelectorAll('input').length).toBe(2);
+  expect(container.querySelectorAll('button').length).toBe(1);
 });
 
 test('inputs get focused when related label is clicked', async () => {
@@ -29,8 +28,7 @@ test('inputs get focused when related label is clicked', async () => {
 
 test('submit button is disabled by default', () => {
   render(<Login />);
-  const submitBtn = screen.getByRole('button', { name: /ok/i });
-  expect(submitBtn).toBeDisabled();
+  expect(screen.getByRole('button', { name: /ok/i })).toBeDisabled();
 });
 
 test('submit button is enabled when email is valid and password has 8+ characters', async () => {
@@ -39,34 +37,30 @@ test('submit button is enabled when email is valid and password has 8+ character
   const passwordInput = screen.getByLabelText(/password/i);
   const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-  // Still disabled with invalid data
-  await userEvent.type(emailInput, 'notanemail');
-  await userEvent.type(passwordInput, 'short');
-  expect(submitBtn).toBeDisabled();
-
-  // Clear and type valid data
-  await userEvent.clear(emailInput);
-  await userEvent.clear(passwordInput);
   await userEvent.type(emailInput, 'user@example.com');
   await userEvent.type(passwordInput, 'validpassword123');
   expect(submitBtn).not.toBeDisabled();
 });
 
-test('submit button stays disabled if only email is valid', async () => {
+test('submit button stays disabled if email is invalid', async () => {
   render(<Login />);
   const emailInput = screen.getByLabelText(/email/i);
-  const submitBtn = screen.getByRole('button', { name: /ok/i });
-
-  await userEvent.type(emailInput, 'user@example.com');
-  expect(submitBtn).toBeDisabled();
-});
-
-test('submit button stays disabled if only password is valid', async () => {
-  render(<Login />);
   const passwordInput = screen.getByLabelText(/password/i);
   const submitBtn = screen.getByRole('button', { name: /ok/i });
 
+  await userEvent.type(emailInput, 'notanemail');
   await userEvent.type(passwordInput, 'validpassword123');
+  expect(submitBtn).toBeDisabled();
+});
+
+test('submit button stays disabled if password is less than 8 characters', async () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitBtn = screen.getByRole('button', { name: /ok/i });
+
+  await userEvent.type(emailInput, 'user@example.com');
+  await userEvent.type(passwordInput, 'short');
   expect(submitBtn).toBeDisabled();
 });
 
@@ -79,7 +73,6 @@ test('submitting the form does not reload the page', async () => {
   await userEvent.type(emailInput, 'user@example.com');
   await userEvent.type(passwordInput, 'validpassword123');
   await userEvent.click(submitBtn);
-
 
   expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
 });

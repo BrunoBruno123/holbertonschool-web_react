@@ -63,11 +63,12 @@ class Login extends Component {
             value={password}
             onChange={this.handleChangePassword}
           />
-          <input
+          <button
             type="submit"
-            value="OK"
             disabled={!enableSubmit}
-          />
+          >
+            OK
+          </button>
         </form>
       </div>
     );
