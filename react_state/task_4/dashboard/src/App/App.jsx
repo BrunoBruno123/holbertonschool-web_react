@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { Component, Fragment } from 'react';
 import Notifications from "../Notifications/Notifications";
 import Header from '../Header/Header';
@@ -9,13 +10,13 @@ import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBot
 import NewContext from '../Context/context';
 import './App.css';
 
-const coursesList = [
+export const coursesList = [
   { id: 1, name: 'ES6', credit: 60 },
   { id: 2, name: 'Webpack', credit: 20 },
   { id: 3, name: 'React', credit: 40 },
 ];
 
-const notificationsList = [
+export const notificationsList = [
   { id: 1, type: 'default', value: 'New course available' },
   { id: 2, type: 'urgent', value: 'New resume available' },
   { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
@@ -30,7 +31,6 @@ class App extends Component {
     this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
     this.handleHideDrawer = this.handleHideDrawer.bind(this);
     this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
-
     this.state = {
       displayDrawer: false,
       user: {
@@ -39,8 +39,8 @@ class App extends Component {
         isLoggedIn: false,
       },
       logOut: this.logOut,
-      notifications: notificationsList,
-      courses: coursesList,
+      notifications: [...notificationsList],
+      courses: [...coursesList],
     };
   }
 

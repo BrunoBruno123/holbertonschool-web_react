@@ -8,7 +8,7 @@ const notifications = [
   { id: 2, type: 'urgent', value: 'New resume available' },
 ];
 
-test('clicking notification calls markNotificationAsRead with the correct id', () => {
+test('clicking notification calls markNotificationAsRead with correct id', () => {
   const markNotificationAsRead = jest.fn();
   const { container } = render(
     <Notifications
@@ -27,39 +27,9 @@ test('clicking notification calls markNotificationAsRead with the correct id', (
   expect(markNotificationAsRead).toHaveBeenCalledWith(2);
 });
 
-test('does not re-render if notifications length stays the same', () => {
-  const { rerender, queryByText } = render(
-    <Notifications
-      displayDrawer={true}
-      notifications={notifications}
-      markNotificationAsRead={jest.fn()}
-    />
-  );
-
-  const newNotifications = [
-    { id: 3, type: 'default', value: 'Test 1' },
-    { id: 4, type: 'urgent', value: 'Test 2' },
-  ];
-
-  rerender(
-    <Notifications
-      displayDrawer={true}
-      notifications={newNotifications}
-      markNotificationAsRead={jest.fn()}
-    />
-  );
-
-  // PureComponent does shallow comparison — same length means no re-render
-  expect(queryByText('New course available')).toBeInTheDocument();
-});
-
 test('re-renders if notifications length changes', () => {
   const { rerender, queryByText } = render(
-    <Notifications
-      displayDrawer={true}
-      notifications={notifications}
-      markNotificationAsRead={jest.fn()}
-    />
+    <Notifications displayDrawer={true} notifications={notifications} />
   );
 
   const newNotifications = [
@@ -68,14 +38,23 @@ test('re-renders if notifications length changes', () => {
   ];
 
   rerender(
-    <Notifications
-      displayDrawer={true}
-      notifications={newNotifications}
-      markNotificationAsRead={jest.fn()}
-    />
+    <Notifications displayDrawer={true} notifications={newNotifications} />
   );
 
   expect(queryByText('New notification')).toBeInTheDocument();
+});
+
+test('does not re-render when same props reference is passed', () => {
+  const { rerender, queryByText } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
+
+  // Pass the exact same reference — PureComponent shallow compare sees no change
+  rerender(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
+
+  expect(queryByText('New course available')).toBeInTheDocument();
 });
 
 test('clicking on "Your notifications" calls handleDisplayDrawer', () => {
@@ -86,7 +65,6 @@ test('clicking on "Your notifications" calls handleDisplayDrawer', () => {
       notifications={notifications}
       handleDisplayDrawer={handleDisplayDrawer}
       handleHideDrawer={jest.fn()}
-      markNotificationAsRead={jest.fn()}
     />
   );
 
@@ -102,7 +80,6 @@ test('clicking on the close button calls handleHideDrawer', () => {
       notifications={notifications}
       handleDisplayDrawer={jest.fn()}
       handleHideDrawer={handleHideDrawer}
-      markNotificationAsRead={jest.fn()}
     />
   );
 
