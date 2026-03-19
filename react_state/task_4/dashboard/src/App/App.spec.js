@@ -100,4 +100,27 @@ describe('App component', () => {
     fireEvent.click(screen.getByLabelText(/Close/i));
     expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
   });
+
+  test('clicking a notification removes it from the list and logs the correct string', () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const { container } = render(<App />);
+
+    // Open the drawer
+    fireEvent.click(screen.getByText(/Your notifications/i));
+
+    const lisBeforeClick = container.querySelectorAll('.Notifications li');
+    const initialCount = lisBeforeClick.length;
+
+    // Click the first notification (id: 1)
+    fireEvent.click(lisBeforeClick[0]);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Notification 1 has been marked as read'
+    );
+
+    const lisAfterClick = container.querySelectorAll('.Notifications li');
+    expect(lisAfterClick.length).toBe(initialCount - 1);
+
+    consoleSpy.mockRestore();
+  });
 });

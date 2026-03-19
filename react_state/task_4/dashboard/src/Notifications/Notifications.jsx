@@ -10,7 +10,7 @@ class Notifications extends PureComponent {
       displayDrawer = false,
       handleDisplayDrawer = () => {},
       handleHideDrawer = () => {},
-      markNotificationAsRead = () => {},
+      markNotificationAsRead,
     } = this.props;
 
     return (
