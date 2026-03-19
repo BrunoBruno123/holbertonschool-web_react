@@ -10,7 +10,7 @@ class Notifications extends PureComponent {
       displayDrawer = false,
       handleDisplayDrawer = () => {},
       handleHideDrawer = () => {},
-      markNotificationAsRead = () => {},
+      markNotificationAsRead = () => {}, // receive from props
     } = this.props;
 
     return (
@@ -38,7 +38,7 @@ class Notifications extends PureComponent {
                     type={notif.type}
                     value={notif.value}
                     html={notif.html}
-                    markAsRead={markNotificationAsRead}
+                    markAsRead={markNotificationAsRead} // use prop
                   />
                 ))}
               </ul>
@@ -49,11 +49,7 @@ class Notifications extends PureComponent {
               style={{ position: 'absolute', top: '10px', right: '10px' }}
               onClick={handleHideDrawer}
             >
-              <img
-                src={close}
-                alt="close"
-                style={{ width: '30px', height: '30px' }}
-              />
+              <img src={close} alt="close" style={{ width: '30px', height: '30px' }} />
             </button>
           </div>
         )}
