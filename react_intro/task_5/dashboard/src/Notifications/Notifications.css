@@ -1,4 +1,16 @@
-.notification-items {
-    border: 1px dotted #e1003c;
-    position: relative;
+.notification-items{
+    border: 2px dotted #e1003c;
+    padding: 5px;
+    overflow: hidden;
+}
+.notification-items button {
+  float: right;
+}
+
+[data-priority="default"] {
+  color: blue;
+}
+
+[data-priority="urgent"] {
+  color: red;
 }
