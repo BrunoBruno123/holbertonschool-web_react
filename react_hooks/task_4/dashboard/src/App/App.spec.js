@@ -114,13 +114,58 @@ describe('App component', () => {
     // Click the first notification (id: 1)
     fireEvent.click(lisBeforeClick[0]);
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Notification 1 has been marked as read'
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('Notification 1 has been marked as read');
 
     const lisAfterClick = container.querySelectorAll('.Notifications li');
     expect(lisAfterClick.length).toBe(initialCount - 1);
 
     consoleSpy.mockRestore();
+  });
+
+  test('handleDisplayDrawer sets displayDrawer to true', () => {
+    render(<App />);
+    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText(/Your notifications/i));
+    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
+  });
+
+  test('handleHideDrawer sets displayDrawer to false', () => {
+    render(<App />);
+    fireEvent.click(screen.getByText(/Your notifications/i));
+    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText(/Close/i));
+    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
+  });
+
+  test('logIn updates user email, password, and isLoggedIn', async () => {
+    render(<App />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitBtn = screen.getByRole('button', { name: /ok/i });
+
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'validpassword123');
+    await userEvent.click(submitBtn);
+
+    expect(screen.getByText(/Welcome user@example.com/i)).toBeInTheDocument();
+    expect(document.getElementById('logoutSection')).toBeInTheDocument();
+  });
+
+  test('logOut sets isLoggedIn to false and clears email and password', async () => {
+    render(<App />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitBtn = screen.getByRole('button', { name: /ok/i });
+
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'validpassword123');
+    await userEvent.click(submitBtn);
+
+    expect(document.getElementById('logoutSection')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/logout/i));
+
+    expect(document.getElementById('logoutSection')).toBeNull();
+    expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
   });
 });

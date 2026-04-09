@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { useState, useCallback, useEffect, Fragment } from 'react';
 import Notifications from "../Notifications/Notifications";
 import Header from '../Header/Header';
 import Login from '../Login/Login';
@@ -21,119 +21,85 @@ const notificationsList = [
   { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
 ];
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.logIn = this.logIn.bind(this);
-    this.logOut = this.logOut.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
-    this.handleHideDrawer = this.handleHideDrawer.bind(this);
-    this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
+const defaultUser = {
+  email: '',
+  password: '',
+  isLoggedIn: false,
+};
 
-    this.state = {
-      displayDrawer: false,
-      user: {
-        email: '',
-        password: '',
-        isLoggedIn: false,
-      },
-      logOut: this.logOut,
-      notifications: notificationsList,
-      courses: coursesList,
-    };
-  }
+const App = () => {
+  const [displayDrawer, setDisplayDrawer] = useState(false);
+  const [user, setUser] = useState(defaultUser);
+  const [notifications, setNotifications] = useState(notificationsList);
 
-  handleKeyDown(e) {
-    if ('key' in e && e.ctrlKey && e.key === 'h') {
-      alert('Logging you out');
-      this.logOut();
-    }
-  }
+  const logOut = useCallback(() => {
+    setUser({ email: '', password: '', isLoggedIn: false });
+  }, []);
 
-  handleDisplayDrawer() {
-    this.setState({ displayDrawer: true });
-  }
+  const logIn = useCallback((email, password) => {
+    setUser({ email, password, isLoggedIn: true });
+  }, []);
 
-  handleHideDrawer() {
-    this.setState({ displayDrawer: false });
-  }
+  const handleDisplayDrawer = useCallback(() => {
+    setDisplayDrawer(true);
+  }, []);
 
-  logIn(email, password) {
-    this.setState({
-      user: {
-        email,
-        password,
-        isLoggedIn: true,
-      },
-    });
-  }
+  const handleHideDrawer = useCallback(() => {
+    setDisplayDrawer(false);
+  }, []);
 
-  logOut() {
-    this.setState({
-      user: {
-        email: '',
-        password: '',
-        isLoggedIn: false,
-      },
-    });
-  }
-
-  markNotificationAsRead(id) {
+  const markNotificationAsRead = useCallback((id) => {
     console.log(`Notification ${id} has been marked as read`);
-    this.setState((prevState) => ({
-      notifications: prevState.notifications.filter((n) => n.id !== id),
-    }));
-  }
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ('key' in e && e.ctrlKey && e.key === 'h') {
+        alert('Logging you out');
+        logOut();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [logOut]);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
+  return (
+    <NewContext.Provider value={{ user, logOut }}>
+      <Fragment>
+        <div className="root-notifications">
+          <Notifications
+            notifications={notifications}
+            displayDrawer={displayDrawer}
+            handleDisplayDrawer={handleDisplayDrawer}
+            handleHideDrawer={handleHideDrawer}
+            markNotificationAsRead={markNotificationAsRead}
+          />
+        </div>
+        <Header />
 
-  render() {
-    const { displayDrawer, user, logOut, notifications, courses } = this.state;
-
-    return (
-      <NewContext.Provider value={{ user, logOut }}>
-        <Fragment>
-          <div className="root-notifications">
-            <Notifications
-              notifications={notifications}
-              displayDrawer={displayDrawer}
-              handleDisplayDrawer={this.handleDisplayDrawer}
-              handleHideDrawer={this.handleHideDrawer}
-              markNotificationAsRead={this.markNotificationAsRead}
+        {user.isLoggedIn ? (
+          <BodySectionWithMarginBottom title="Course list">
+            <CourseList courses={coursesList} />
+          </BodySectionWithMarginBottom>
+        ) : (
+          <BodySectionWithMarginBottom title="Log in to continue">
+            <Login
+              logIn={logIn}
+              email={user.email}
+              password={user.password}
             />
-          </div>
-          <Header />
+          </BodySectionWithMarginBottom>
+        )}
 
-          {user.isLoggedIn ? (
-            <BodySectionWithMarginBottom title="Course list">
-              <CourseList courses={courses} />
-            </BodySectionWithMarginBottom>
-          ) : (
-            <BodySectionWithMarginBottom title="Log in to continue">
-              <Login
-                logIn={this.logIn}
-                email={user.email}
-                password={user.password}
-              />
-            </BodySectionWithMarginBottom>
-          )}
+        <BodySection title="News from the School">
+          <p>Holberton School News goes here</p>
+        </BodySection>
 
-          <BodySection title="News from the School">
-            <p>Holberton School News goes here</p>
-          </BodySection>
-
-          <Footer />
-        </Fragment>
-      </NewContext.Provider>
-    );
-  }
-}
+        <Footer />
+      </Fragment>
+    </NewContext.Provider>
+  );
+};
 
 export default App;
