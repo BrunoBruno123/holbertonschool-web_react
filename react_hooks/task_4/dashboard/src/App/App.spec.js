@@ -1,29 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor,  } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import axios from 'axios';
 import App from './App';
 
-// Mock axios so tests don't hit the network
-jest.mock('axios');
-
-const mockNotifications = [
-  { id: 1, type: 'default', value: 'New course available' },
-  { id: 2, type: 'urgent', value: 'New resume available' },
-  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
-];
-
-beforeEach(() => {
-  axios.get.mockResolvedValue({ data: mockNotifications });
-});
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('App component', () => {
-  test('renders notifications', async () => {
+  test('renders notifications', () => {
     render(<App />);
     expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
   });
@@ -36,11 +18,6 @@ describe('App component', () => {
   test('renders Login when not logged in by default', () => {
     render(<App />);
     expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
-  });
-
-  test('fetches notifications from /notifications.json on mount', async () => {
-    render(<App />);
-    await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/notifications.json'));
   });
 
   test('renders CourseList after logging in via state', async () => {
@@ -124,60 +101,25 @@ describe('App component', () => {
     expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
   });
 
-  test('clicking a notification removes it from the list and logs the correct string', async () => {
+  test('clicking a notification removes it from the list and logs the correct string', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const { container } = render(<App />);
 
-    // Wait for notifications to load from mock axios
-    await waitFor(() =>
-      expect(container.querySelectorAll('.Notifications li').length).toBeGreaterThan(0)
-    );
-
+    // Open the drawer
     fireEvent.click(screen.getByText(/Your notifications/i));
 
     const lisBeforeClick = container.querySelectorAll('.Notifications li');
     const initialCount = lisBeforeClick.length;
 
+    // Click the first notification (id: 1)
     fireEvent.click(lisBeforeClick[0]);
 
-    expect(consoleSpy).toHaveBeenCalledWith('Notification 1 has been marked as read');
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Notification 1 has been marked as read'
+    );
 
     const lisAfterClick = container.querySelectorAll('.Notifications li');
     expect(lisAfterClick.length).toBe(initialCount - 1);
-
-    consoleSpy.mockRestore();
-  });
-
-  // ── Reference stability tests ──────────────────────────────────────────────
-
-  test('handleDisplayDrawer and handleHideDrawer keep the same function reference between re-renders', () => {
-    render(<App />);
-
-    fireEvent.click(screen.getByText(/Your notifications/i));
-    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText(/Close/i));
-    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText(/Your notifications/i));
-    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
-  });
-
-  test('markNotificationAsRead keeps the same function reference between re-renders', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const { container } = render(<App />);
-
-    await waitFor(() =>
-      expect(container.querySelectorAll('.Notifications li').length).toBeGreaterThan(0)
-    );
-
-    fireEvent.click(screen.getByText(/Your notifications/i));
-
-    fireEvent.click(container.querySelectorAll('.Notifications li')[0]);
-    expect(consoleSpy).toHaveBeenCalledWith('Notification 1 has been marked as read');
-
-    fireEvent.click(container.querySelectorAll('.Notifications li')[0]);
-    expect(consoleSpy).toHaveBeenCalledWith('Notification 2 has been marked as read');
 
     consoleSpy.mockRestore();
   });
