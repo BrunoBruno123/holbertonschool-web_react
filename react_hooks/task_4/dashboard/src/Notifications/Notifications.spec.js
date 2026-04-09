@@ -49,8 +49,6 @@ test('does not re-render if notifications length stays the same', () => {
       markNotificationAsRead={markNotificationAsRead}
     />
   );
-
-  // memo with areEqual blocks re-render when length is the same
   expect(queryByText('New course available')).toBeInTheDocument();
 });
 
