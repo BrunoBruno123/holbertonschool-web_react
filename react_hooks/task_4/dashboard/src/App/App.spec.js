@@ -1,11 +1,29 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import axios from 'axios';
 import App from './App';
 
+// Mock axios so tests don't make real HTTP requests
+jest.mock('axios');
+
+const mockNotifications = [
+  { id: 1, type: 'default', value: 'New course available' },
+  { id: 2, type: 'urgent', value: 'New resume available' },
+  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
+];
+
+beforeEach(() => {
+  axios.get.mockResolvedValue({ data: mockNotifications });
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('App component', () => {
-  test('renders notifications', () => {
+  test('renders notifications', async () => {
     render(<App />);
     expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
   });
@@ -101,17 +119,20 @@ describe('App component', () => {
     expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
   });
 
-  test('clicking a notification removes it from the list and logs the correct string', () => {
+  test('clicking a notification removes it from the list and logs the correct string', async () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const { container } = render(<App />);
 
-    // Open the drawer
-    fireEvent.click(screen.getByText(/Your notifications/i));
+    // Wait for axios to resolve and notifications to load
+    await waitFor(() => {
+      fireEvent.click(screen.getByText(/Your notifications/i));
+      const lis = container.querySelectorAll('.Notifications li');
+      expect(lis.length).toBeGreaterThan(0);
+    });
 
     const lisBeforeClick = container.querySelectorAll('.Notifications li');
     const initialCount = lisBeforeClick.length;
 
-    // Click the first notification (id: 1)
     fireEvent.click(lisBeforeClick[0]);
 
     expect(consoleSpy).toHaveBeenCalledWith('Notification 1 has been marked as read');
@@ -139,13 +160,9 @@ describe('App component', () => {
 
   test('logIn updates user email, password, and isLoggedIn', async () => {
     render(<App />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitBtn = screen.getByRole('button', { name: /ok/i });
-
-    await userEvent.type(emailInput, 'user@example.com');
-    await userEvent.type(passwordInput, 'validpassword123');
-    await userEvent.click(submitBtn);
+    await userEvent.type(screen.getByLabelText(/email/i), 'user@example.com');
+    await userEvent.type(screen.getByLabelText(/password/i), 'validpassword123');
+    await userEvent.click(screen.getByRole('button', { name: /ok/i }));
 
     expect(screen.getByText(/Welcome user@example.com/i)).toBeInTheDocument();
     expect(document.getElementById('logoutSection')).toBeInTheDocument();
@@ -153,13 +170,9 @@ describe('App component', () => {
 
   test('logOut sets isLoggedIn to false and clears email and password', async () => {
     render(<App />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitBtn = screen.getByRole('button', { name: /ok/i });
-
-    await userEvent.type(emailInput, 'user@example.com');
-    await userEvent.type(passwordInput, 'validpassword123');
-    await userEvent.click(submitBtn);
+    await userEvent.type(screen.getByLabelText(/email/i), 'user@example.com');
+    await userEvent.type(screen.getByLabelText(/password/i), 'validpassword123');
+    await userEvent.click(screen.getByRole('button', { name: /ok/i }));
 
     expect(document.getElementById('logoutSection')).toBeInTheDocument();
 

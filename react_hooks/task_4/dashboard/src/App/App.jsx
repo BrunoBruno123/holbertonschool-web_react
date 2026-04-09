@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
+import axios from 'axios';
 import Notifications from "../Notifications/Notifications";
 import Header from '../Header/Header';
 import Login from '../Login/Login';
@@ -15,12 +16,6 @@ const coursesList = [
   { id: 3, name: 'React', credit: 40 },
 ];
 
-const notificationsList = [
-  { id: 1, type: 'default', value: 'New course available' },
-  { id: 2, type: 'urgent', value: 'New resume available' },
-  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
-];
-
 const defaultUser = {
   email: '',
   password: '',
@@ -30,7 +25,17 @@ const defaultUser = {
 const App = () => {
   const [displayDrawer, setDisplayDrawer] = useState(false);
   const [user, setUser] = useState(defaultUser);
-  const [notifications, setNotifications] = useState(notificationsList);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    axios.get('/notifications.json')
+      .then((res) => {
+        setNotifications(res.data);
+      })
+      .catch(() => {
+        // fallback: leave notifications empty
+      });
+  }, []);
 
   const logOut = useCallback(() => {
     setUser({ email: '', password: '', isLoggedIn: false });
