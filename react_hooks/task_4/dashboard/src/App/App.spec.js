@@ -1,10 +1,29 @@
-import { render, screen, fireEvent, } from '@testing-library/react';
+import React from 'react';
+import { render, screen, fireEvent, waitFor,  } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import axios from 'axios';
 import App from './App';
 
+// Mock axios so tests don't hit the network
+jest.mock('axios');
+
+const mockNotifications = [
+  { id: 1, type: 'default', value: 'New course available' },
+  { id: 2, type: 'urgent', value: 'New resume available' },
+  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
+];
+
+beforeEach(() => {
+  axios.get.mockResolvedValue({ data: mockNotifications });
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('App component', () => {
-  test('renders notifications', () => {
+  test('renders notifications', async () => {
     render(<App />);
     expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
   });
@@ -17,6 +36,11 @@ describe('App component', () => {
   test('renders Login when not logged in by default', () => {
     render(<App />);
     expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
+  });
+
+  test('fetches notifications from /notifications.json on mount', async () => {
+    render(<App />);
+    await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/notifications.json'));
   });
 
   test('renders CourseList after logging in via state', async () => {
@@ -100,9 +124,14 @@ describe('App component', () => {
     expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
   });
 
-  test('clicking a notification removes it from the list and logs the correct string', () => {
+  test('clicking a notification removes it from the list and logs the correct string', async () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const { container } = render(<App />);
+
+    // Wait for notifications to load from mock axios
+    await waitFor(() =>
+      expect(container.querySelectorAll('.Notifications li').length).toBeGreaterThan(0)
+    );
 
     fireEvent.click(screen.getByText(/Your notifications/i));
 
@@ -121,45 +150,33 @@ describe('App component', () => {
 
   // ── Reference stability tests ──────────────────────────────────────────────
 
-  test('handleDisplayDrawer and handleHideDrawer keep the same function reference between re-renders', async () => {
-    // We capture the props passed to Notifications across two renders by
-    // triggering a state change (login) that causes App to re-render, then
-    // verifying the drawer handlers still work identically (same behaviour =
-    // stable refs when wrapped in useCallback with no deps).
-    //
-    // Since RTL doesn't expose raw refs from the parent, we verify stability
-    // behaviourally: open → close → open in sequence; if references changed
-    // on each render the handlers would break.
+  test('handleDisplayDrawer and handleHideDrawer keep the same function reference between re-renders', () => {
     render(<App />);
 
-    // First open
     fireEvent.click(screen.getByText(/Your notifications/i));
     expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
 
-    // Close
     fireEvent.click(screen.getByLabelText(/Close/i));
     expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
 
-    // Trigger an unrelated state update (mark a notification won't work here
-    // since drawer is closed); instead open again to confirm handler is still live
     fireEvent.click(screen.getByText(/Your notifications/i));
     expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
   });
 
-  test('markNotificationAsRead keeps the same function reference between re-renders', () => {
+  test('markNotificationAsRead keeps the same function reference between re-renders', async () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const { container } = render(<App />);
 
+    await waitFor(() =>
+      expect(container.querySelectorAll('.Notifications li').length).toBeGreaterThan(0)
+    );
+
     fireEvent.click(screen.getByText(/Your notifications/i));
 
-    // Mark first notification — this triggers a state update (re-render)
-    const firstLi = container.querySelectorAll('.Notifications li')[0];
-    fireEvent.click(firstLi);
+    fireEvent.click(container.querySelectorAll('.Notifications li')[0]);
     expect(consoleSpy).toHaveBeenCalledWith('Notification 1 has been marked as read');
 
-    // After re-render, mark second notification — proves handler ref is stable
-    const secondLi = container.querySelectorAll('.Notifications li')[0];
-    fireEvent.click(secondLi);
+    fireEvent.click(container.querySelectorAll('.Notifications li')[0]);
     expect(consoleSpy).toHaveBeenCalledWith('Notification 2 has been marked as read');
 
     consoleSpy.mockRestore();
