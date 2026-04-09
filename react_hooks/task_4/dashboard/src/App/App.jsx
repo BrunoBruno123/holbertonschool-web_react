@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import Notifications from "../Notifications/Notifications";
+import React, { useState, useCallback, useEffect } from 'react';
+import Notifications from '../Notifications/Notifications';
 import Header from '../Header/Header';
 import Login from '../Login/Login';
 import Footer from '../Footer/Footer';
@@ -21,36 +21,23 @@ const notificationsList = [
   { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
 ];
 
-const App = () => {
-  // ================= STATE =================
+const defaultUser = {
+  email: '',
+  password: '',
+  isLoggedIn: false,
+};
+
+function App() {
   const [displayDrawer, setDisplayDrawer] = useState(false);
-
-  const [user, setUser] = useState({
-    email: '',
-    password: '',
-    isLoggedIn: false,
-  });
-
+  const [user, setUser] = useState(defaultUser);
   const [notifications, setNotifications] = useState(notificationsList);
 
-  const courses = useMemo(() => coursesList, []);
-
-  // ================= LOGIC =================
-
-  const logIn = useCallback((email, password) => {
-    setUser({
-      email,
-      password,
-      isLoggedIn: true,
-    });
+  const logOut = useCallback(() => {
+    setUser({ email: '', password: '', isLoggedIn: false });
   }, []);
 
-  const logOut = useCallback(() => {
-    setUser({
-      email: '',
-      password: '',
-      isLoggedIn: false,
-    });
+  const logIn = useCallback((email, password) => {
+    setUser({ email, password, isLoggedIn: true });
   }, []);
 
   const handleDisplayDrawer = useCallback(() => {
@@ -66,23 +53,17 @@ const App = () => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
-  // ================= KEYDOWN (replaces lifecycle) =================
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === 'h') {
+      if ('key' in e && e.ctrlKey && e.key === 'h') {
         alert('Logging you out');
         logOut();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [logOut]);
 
-  // ================= RENDER =================
   return (
     <NewContext.Provider value={{ user, logOut }}>
       <>
@@ -95,20 +76,15 @@ const App = () => {
             markNotificationAsRead={markNotificationAsRead}
           />
         </div>
-
         <Header />
 
         {user.isLoggedIn ? (
           <BodySectionWithMarginBottom title="Course list">
-            <CourseList courses={courses} />
+            <CourseList courses={coursesList} />
           </BodySectionWithMarginBottom>
         ) : (
           <BodySectionWithMarginBottom title="Log in to continue">
-            <Login
-              logIn={logIn}
-              email={user.email}
-              password={user.password}
-            />
+            <Login logIn={logIn} email={user.email} password={user.password} />
           </BodySectionWithMarginBottom>
         )}
 
@@ -120,6 +96,6 @@ const App = () => {
       </>
     </NewContext.Provider>
   );
-};
+}
 
 export default App;
