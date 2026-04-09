@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import Footer from './Footer';
 import NewContext from '../Context/context';
 
-// Helper: render Footer with a given user value via context
+
 const renderWithContext = (user) =>
   render(
     <NewContext.Provider value={{ user }}>
