@@ -1,11 +1,11 @@
 import { useState } from "react"
+
 const useLogin = (onLogin) => {
     const [enableSubmit, setEnableSubmit] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
 
     const validateForm = (email, password) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
         return emailRegex.test(email) && password.length >= 8;
     };
 
@@ -21,15 +21,14 @@ const useLogin = (onLogin) => {
     };
 
     const handleChangePassword = (e) => {
-        const { value: password } = e.target;
+        const { value: password } = e.target; 
         const { email } = formData;
-        if (value.length >= 8) {
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                password,
-            }));
-            setEnableSubmit(validateForm(email, password));
-        }
+
+        setFormData((prevFormData) => ({      
+            ...prevFormData,
+            password,
+        }));
+        setEnableSubmit(validateForm(email, password));
     };
 
     const handleLoginSubmit = (e) => {
@@ -37,12 +36,10 @@ const useLogin = (onLogin) => {
 
         const { email, password } = formData;
 
-        if (props.logIn) {
-            props.logIn(email, password);
+        if (onLogin) {                          
+            onLogin(email, password);
         }
     };
-
-    const { email, password } = formData
 
     return {
         formData,
