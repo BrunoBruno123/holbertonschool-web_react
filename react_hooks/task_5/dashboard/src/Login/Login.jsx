@@ -2,13 +2,13 @@ import useLogin from "../hooks/useLogin";
 import "./Login.css";
 
 function Login(props) {
-
     const {
-        formData,
+        email,
+        password,
         enableSubmit,
         handleChangeEmail,
         handleChangePassword,
-        handleLoginSubmit
+        handleLoginSubmit,
     } = useLogin(props.logIn);
 
     return (
@@ -18,10 +18,10 @@ function Login(props) {
             <form onSubmit={handleLoginSubmit}>
                 <label htmlFor="email">Email</label>
                 <input
-                    type="text"
+                    type="email"
                     id="email"
                     name="email"
-                    value={formData.email}
+                    value={email}
                     onChange={handleChangeEmail}
                 />
 
@@ -30,9 +30,10 @@ function Login(props) {
                     type="password"
                     id="password"
                     name="password"
-                    value={formData.password}
+                    value={password}
                     onChange={handleChangePassword}
                 />
+
                 <input type="submit" value="OK" disabled={!enableSubmit} />
             </form>
         </div>
