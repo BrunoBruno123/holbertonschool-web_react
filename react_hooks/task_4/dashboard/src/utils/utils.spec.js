@@ -1,31 +1,34 @@
-import { getCurrentYear, getFooterCopy, getLatestNotification } from '../utils/utils';
+import { getCurrentYear, getFooterCopy, getLatestNotification } from "./utils";
 
-describe('Utility functions', () => {
+describe("getCurrentYear()", () => {
+    test("returns correct year", () => {
+        // Expected year
+        const currentYear = () => {
+            return new Date().getFullYear();
+        };
 
-    describe('getCurrentYear', () => {
-        it('should return the current year', () => {
-            const currentYear = new Date().getFullYear();
-            expect(getCurrentYear()).toBe(currentYear);
-        });
+        // Assert functions return value
+        expect(getCurrentYear()).toBe(currentYear());
+    });
+});
+
+describe("getFooterCopy()", () => {
+    test("returns correct string when arg is false", () => {
+        // Assert functions return value
+        expect(getFooterCopy(true)).toBe("Holberton School");
     });
 
-
-    describe('getFooterCopy', () => {
-        it('should return "Holberton School" when isIndex is true', () => {
-            const result = getFooterCopy(true);
-            expect(result).toBe('Holberton School');
-        });
-
-        it('should return "Holberton School main dashboard" when isIndex is false', () => {
-            const result = getFooterCopy(false);
-            expect(result).toBe('Holberton School main dashboard');
-        });
+    test("getFooterCopy() returns correct string when arg is true", () => {
+        // Assert functions return value
+        expect(getFooterCopy(false)).toBe("Holberton School main dashboard");
     });
+});
 
-    describe('getLatestNotification', () => {
-        it('should return the correct notification string with HTML tags', () => {
-            const result = getLatestNotification();
-            expect(result).toBe('<strong>Urgent requirement</strong> - complete by EOD');
-        });
+describe("getLatestNotification()", () => {
+    test("returns correct string", () => {
+        // Assert functions return value
+        expect(getLatestNotification()).toBe(
+            "<strong>Urgent requirement</strong> - complete by EOD"
+        );
     });
 });

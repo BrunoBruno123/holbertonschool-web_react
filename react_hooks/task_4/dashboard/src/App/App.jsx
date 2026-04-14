@@ -1,44 +1,104 @@
-import React, { useState, useCallback, useEffect, Fragment } from 'react';
+import axios from "axios";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import CourseList from "../CourseList/CourseList";
+import "../CourseList/CourseList.css";
+import Footer from "../Footer/Footer";
+import Header from "../Header/Header";
+import Login from "../Login/Login";
 import Notifications from "../Notifications/Notifications";
-import Header from '../Header/Header';
-import Login from '../Login/Login';
-import Footer from '../Footer/Footer';
-import CourseList from '../CourseList/CourseList';
-import BodySection from '../BodySection/BodySection';
-import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
-import NewContext from '../Context/context';
-import './App.css';
+import BodySection from "../BodySection/BodySection";
+import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
+import AppContext from "../Context/context";
+import { getLatestNotification } from "../utils/utils";
+import "./App.css";
 
-const coursesList = [
-  { id: 1, name: 'ES6', credit: 60 },
-  { id: 2, name: 'Webpack', credit: 20 },
-  { id: 3, name: 'React', credit: 40 },
-];
+function normalizeNotifications(data) {
+  const nextNotifications = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.notifications)
+      ? data.notifications
+      : [];
 
-const notificationsList = [
-  { id: 1, type: 'default', value: 'New course available' },
-  { id: 2, type: 'urgent', value: 'New resume available' },
-  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong> - complete by EOD' } },
-];
+  return nextNotifications.map((notification) =>
+    notification.html
+      ? {
+          ...notification,
+          html: { __html: getLatestNotification() },
+        }
+      : notification
+  );
+}
 
-const defaultUser = {
-  email: '',
-  password: '',
-  isLoggedIn: false,
-};
+function normalizeCourses(data) {
+  return Array.isArray(data)
+    ? data
+    : Array.isArray(data?.courses)
+      ? data.courses
+      : [];
+}
+
+function logDevelopmentError(error) {
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    console.error(error);
+  }
+}
 
 const App = () => {
-  const [displayDrawer, setDisplayDrawer] = useState(false);
-  const [user, setUser] = useState(defaultUser);
-  const [notifications, setNotifications] = useState(notificationsList);
+  const { user: contextUser } = useContext(AppContext);
+  const removedNotificationIdsRef = useRef(new Set());
+  const [displayDrawer, setDisplayDrawer] = useState(true);
+  const [user, setUser] = useState(contextUser);
+  const [notifications, setNotifications] = useState([]);
+  const [courses, setCourses] = useState([]);
 
-  const logOut = useCallback(() => {
-    setUser({ email: '', password: '', isLoggedIn: false });
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchNotifications = async () => {
+      try {
+        const { data } = await axios.get("/notifications.json");
+
+        if (isMounted) {
+          setNotifications(
+            normalizeNotifications(data).filter(
+              (notification) =>
+                !removedNotificationIdsRef.current.has(notification.id)
+            )
+          );
+        }
+      } catch (error) {
+        logDevelopmentError(error);
+      }
+    };
+
+    fetchNotifications();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const logIn = useCallback((email, password) => {
-    setUser({ email, password, isLoggedIn: true });
-  }, []);
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchCourses = async () => {
+      try {
+        const { data } = await axios.get("/courses.json");
+
+        if (isMounted) {
+          setCourses(normalizeCourses(data));
+        }
+      } catch (error) {
+        logDevelopmentError(error);
+      }
+    };
+
+    fetchCourses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 
   const handleDisplayDrawer = useCallback(() => {
     setDisplayDrawer(true);
@@ -48,25 +108,30 @@ const App = () => {
     setDisplayDrawer(false);
   }, []);
 
-  const markNotificationAsRead = useCallback((id) => {
-    console.log(`Notification ${id} has been marked as read`);
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  const logIn = useCallback((email, password) => {
+    setUser({ email, password, isLoggedIn: true });
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ('key' in e && e.ctrlKey && e.key === 'h') {
-        alert('Logging you out');
-        logOut();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [logOut]);
+  const logOut = useCallback(() => {
+    setUser(contextUser);
+  }, [contextUser]);
+
+  const markNotificationAsRead = useCallback((id) => {
+    removedNotificationIdsRef.current.add(id);
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== id)
+    );
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({ user, logOut }),
+    [user, logOut]
+  );
 
   return (
-    <NewContext.Provider value={{ user, logOut }}>
-      <Fragment>
+    <AppContext.Provider value={contextValue}>
+      <div className="notifications-header">
+        <Header />
         <div className="root-notifications">
           <Notifications
             notifications={notifications}
@@ -76,29 +141,24 @@ const App = () => {
             markNotificationAsRead={markNotificationAsRead}
           />
         </div>
-        <Header />
+      </div>
 
-        {user.isLoggedIn ? (
-          <BodySectionWithMarginBottom title="Course list">
-            <CourseList courses={coursesList} />
-          </BodySectionWithMarginBottom>
-        ) : (
-          <BodySectionWithMarginBottom title="Log in to continue">
-            <Login
-              logIn={logIn}
-              email={user.email}
-              password={user.password}
-            />
-          </BodySectionWithMarginBottom>
-        )}
+      {user.isLoggedIn ? (
+        <BodySectionWithMarginBottom title="Course list">
+          <CourseList courses={courses} />
+        </BodySectionWithMarginBottom>
+      ) : (
+        <BodySectionWithMarginBottom title="Log in to continue">
+          <Login logIn={logIn} />
+        </BodySectionWithMarginBottom>
+      )}
 
-        <BodySection title="News from the School">
-          <p>Holberton School News goes here</p>
-        </BodySection>
+      <BodySection title="News from the School">
+        <p>Holberton School News goes here</p>
+      </BodySection>
 
-        <Footer />
-      </Fragment>
-    </NewContext.Provider>
+      <Footer />
+    </AppContext.Provider>
   );
 };
 

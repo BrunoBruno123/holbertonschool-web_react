@@ -1,25 +1,21 @@
-import React from 'react';
+/* eslint-disable */
+import React from "react";
 
-function createWithLogging(WrappedComponent) {
-  const wrappedName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+function WithLogging(WrappedComponent) {
+    const wrappedName =
+        WrappedComponent.displayName ||
+        WrappedComponent.name ||
+        "Component";
 
-  class WithLogging extends React.Component {
-    componentDidMount() {
-      console.log(`Component ${wrappedName} is mounted`);
+    class WithLoggingComponent extends React.Component {
+        render() {
+            return <WrappedComponent {...this.props} />;
+        }
     }
 
-    componentWillUnmount() {
-      console.log(`Component ${wrappedName} is going to unmount`);
-    }
+    WithLoggingComponent.displayName = `WithLogging(${wrappedName})`;
 
-    render() {
-      return <WrappedComponent {...this.props} />;
-    }
-  }
-
-  WithLogging.displayName = `WithLogging(${wrappedName})`;
-
-  return WithLogging;
+    return WithLoggingComponent;
 }
 
-export default createWithLogging;
+export default WithLogging;

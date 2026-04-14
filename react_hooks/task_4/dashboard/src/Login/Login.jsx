@@ -1,84 +1,77 @@
-import React, { useState } from 'react';
-import './Login.css';
-import WithLogging from '../HOC/WithLogging';
+import { useState } from "react";
+import "./Login.css";
 
-const Login = ({ logIn, email = '', password = '' }) => {
-  const [formData, setFormData] = useState({
-    email,
-    password,
-  });
+function Login(props) {
+    const [enableSubmit, setEnableSubmit] = useState(false);
+    const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const [enableSubmit, setEnableSubmit] = useState(false);
+    const validateForm = (email, password) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const validateFields = (email, password) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) && password.length >= 8;
-  };
+        return emailRegex.test(email) && password.length >= 8;
+    };
 
-  const handleChangeEmail = (e) => {
-    const newEmail = e.target.value;
+    const handleChangeEmail = (e) => {
+        const { value: email } = e.target;
+        const { password } = formData;
 
-    setFormData((prev) => {
-      const updated = { ...prev, email: newEmail };
-      setEnableSubmit(validateFields(updated.email, updated.password));
-      return updated;
-    });
-  };
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            email,
+        }));
+        setEnableSubmit(validateForm(email, password));
+    };
 
-  const handleChangePassword = (e) => {
-    const newPassword = e.target.value;
+    const handleChangePassword = (e) => {
+        const { value: password } = e.target;
+        const { email } = formData;
 
-    setFormData((prev) => {
-      const updated = { ...prev, password: newPassword };
-      setEnableSubmit(validateFields(updated.email, updated.password));
-      return updated;
-    });
-  };
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            password,
+        }));
+        setEnableSubmit(validateForm(email, password));
+    };
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    if (logIn) {
-      logIn(formData.email, formData.password);
-    }
-  };
+    const handleLoginSubmit = (e) => {
+        e.preventDefault();
 
-  return (
-    <div className='App-body'>
-      <p>Login to access the full dashboard</p>
-      <form onSubmit={handleLoginSubmit}>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          value={formData.email}
-          onChange={handleChangeEmail}
-        />
+        const { email, password } = formData;
 
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          value={formData.password}
-          onChange={handleChangePassword}
-        />
+        if (props.logIn) {
+            props.logIn(email, password);
+        }
+    };
 
-        <button
-          type="submit"
-          disabled={!enableSubmit}
-        >
-          OK
-        </button>
-      </form>
-    </div>
-  );
-};
+    const { email, password } = formData;
 
-Login.defaultProps = {
-  logIn: () => {},
-  email: '',
-  password: '',
-};
+    return (
+        <div className="App-body">
+            <p>Login to access the full dashboard</p>
 
-const LoginWithLogging = WithLogging(Login);
+            <form onSubmit={handleLoginSubmit}>
+                <label htmlFor="email">Email</label>
+                <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={handleChangeEmail}
+                />
 
-export default LoginWithLogging;
+                <label htmlFor="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={password}
+                    onChange={handleChangePassword}
+                />
+
+                <input type="submit" value="OK" disabled={!enableSubmit} />
+            </form>
+        </div>
+    );
+}
+
+export default Login;

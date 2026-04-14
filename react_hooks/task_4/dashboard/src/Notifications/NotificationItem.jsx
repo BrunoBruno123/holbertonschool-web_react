@@ -1,24 +1,27 @@
-import React, { memo } from 'react';
+import { memo } from "react";
 
-const NotificationItem = ({ id, type, html, value, markAsRead }) => {
-  const handleClick = () => {
-    if (markAsRead) {
-      markAsRead(id);
-    }
+const NotificationItem = memo(function NotificationItem({
+  id = 0,
+  type = "default",
+  value = "",
+  html = null,
+  markAsRead = () => {},
+}) {
+  const style = {
+    color: type === "urgent" ? "red" : "blue",
   };
 
-  const style = {
-    color: type === 'urgent' ? 'red' : 'blue',
-    cursor: 'pointer',
+  const handleClick = () => {
+    markAsRead(id);
   };
 
   if (html) {
     return (
       <li
         data-notification-type={type}
-        style={style}
         dangerouslySetInnerHTML={html}
         onClick={handleClick}
+        style={style}
       />
     );
   }
@@ -26,12 +29,12 @@ const NotificationItem = ({ id, type, html, value, markAsRead }) => {
   return (
     <li
       data-notification-type={type}
-      style={style}
       onClick={handleClick}
+      style={style}
     >
       {value}
     </li>
   );
-};
+});
 
-export default memo(NotificationItem);
+export default NotificationItem;

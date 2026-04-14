@@ -1,69 +1,64 @@
-import React, { memo } from 'react';
-import './Notifications.css';
-import close from '../assets/close-button.png';
-import NotificationItem from './NotificationItem';
+import { memo } from "react";
+import closeIcon from "../assets/close-button.png";
+import NotificationItem from "./NotificationItem";
+import "./Notifications.css";
 
-const Notifications = ({
-  notifications = [],
-  displayDrawer = false,
-  handleDisplayDrawer = () => {},
-  handleHideDrawer = () => {},
-  markNotificationAsRead,
-}) => {
-  return (
-    <div className="Notifications">
-      <div
-        className="notification-title"
-        onClick={handleDisplayDrawer}
-        style={{ cursor: 'pointer' }}
-      >
-        Your notifications
-      </div>
+function Notifications({
+    notifications = [],
+    displayDrawer = false,
+    handleDisplayDrawer,
+    handleHideDrawer,
+    markNotificationAsRead,
+}) {
+    return (
+        <div className="notifications-container">
+            <div className="notification-title" onClick={handleDisplayDrawer}>
+                Your notifications
+            </div>
 
-      {displayDrawer && (
-        <div className="notification-items">
-          <p>Here is the list of notifications</p>
+            {displayDrawer && (
+                <div className="notification-items">
+                    {notifications.length > 0 ? (
+                        <>
+                            <p>Here is the list of notifications</p>
+                            <ul>
+                                {notifications.map((notification) => (
+                                    <NotificationItem
+                                        key={notification.id}
+                                        id={notification.id}
+                                        type={notification.type}
+                                        html={notification.html}
+                                        value={notification.value}
+                                        markAsRead={markNotificationAsRead}
+                                    />
+                                ))}
+                            </ul>
+                        </>
+                    ) : (
+                        <p>No new notification for now</p>
+                    )}
 
-          {notifications.length === 0 ? (
-            <p>No new notification for now</p>
-          ) : (
-            <ul>
-              {notifications.map((notif) => (
-                <NotificationItem
-                  key={notif.id}
-                  id={notif.id}
-                  type={notif.type}
-                  value={notif.value}
-                  html={notif.html}
-                  markAsRead={markNotificationAsRead}
-                />
-              ))}
-            </ul>
-          )}
-
-          <button
-            aria-label="Close"
-            style={{ position: 'absolute', top: '10px', right: '10px' }}
-            onClick={handleHideDrawer}
-          >
-            <img
-              src={close}
-              alt="close"
-              style={{ width: '30px', height: '30px' }}
-            />
-          </button>
+                    <button
+                        aria-label="Close"
+                        onClick={handleHideDrawer}
+                        className="close-button"
+                    >
+                        <img alt="Close Button" src={closeIcon} />
+                    </button>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
-};
+    );
+}
 
+function arePropsEqual(prevProps, nextProps) {
+    return (
+        prevProps.notifications === nextProps.notifications &&
+        prevProps.displayDrawer === nextProps.displayDrawer &&
+        prevProps.handleDisplayDrawer === nextProps.handleDisplayDrawer &&
+        prevProps.handleHideDrawer === nextProps.handleHideDrawer &&
+        prevProps.markNotificationAsRead === nextProps.markNotificationAsRead
+    );
+}
 
-const areEqual = (prevProps, nextProps) => {
-  return (
-    prevProps.notifications.length === nextProps.notifications.length &&
-    prevProps.displayDrawer === nextProps.displayDrawer
-  );
-};
-
-export default memo(Notifications, areEqual);
+export default memo(Notifications, arePropsEqual);

@@ -1,21 +1,20 @@
 .App-body {
-  margin: 2rem;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
 }
-.App-body label {
-  display: block;
-  margin-top: 1rem;
+
+.App-body form {
+    display: flex;
+    flex-direction: column;
 }
+
 .App-body input {
-  display: block;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  width: 200px;
+    margin-bottom: 10px;
+    padding: 5px;
 }
+
 .App-body button {
-  padding: 0.5rem 1rem;
-  background-color: #e1003c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    width: 60px;
+    padding: 5px;
 }

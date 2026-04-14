@@ -1,36 +1,40 @@
-import React from 'react';
-import CourseListRow from './CourseListRow';
-import './CourseList.css';
-import WithLogging from '../HOC/WithLogging';
+import React from "react";
+import "./CourseList.css";
+import CourseListRow from "./CourseListRow";
 
 const CourseList = ({ courses = [] }) => {
-  return (
-    <table id="CourseList">
-      {courses.length === 0 ? (
-        <tbody>
-          <CourseListRow isHeader={true} textFirstCell="No course available yet" />
-        </tbody>
-      ) : (
-        <>
-          <thead>
-            <CourseListRow textFirstCell="Available courses" isHeader={true} />
-            <CourseListRow textFirstCell="Course name" textSecondCell="Credit" isHeader={true} />
-          </thead>
-          <tbody>
-            {courses.map((course) => (
-              <CourseListRow
-                key={course.id}
-                textFirstCell={course.name}
-                textSecondCell={String(course.credit)}
-              />
-            ))}
-          </tbody>
-        </>
-      )}
-    </table>
-  );
+    return (
+        <table id={"CourseList"} className="course-list">
+            {courses.length > 0 ? (
+                <>
+                    <thead>
+                        <CourseListRow isHeader={true} textFirstCell={"Available courses"} />
+                        <CourseListRow
+                            isHeader={true}
+                            textFirstCell={"Course Name"}
+                            textSecondCell="Credit"
+                        />
+                    </thead>
+
+                    <tbody>
+                        {courses.map((course) => (
+                            <CourseListRow
+                                key={course.id}
+                                textFirstCell={course.name}
+                                textSecondCell={course.credit}
+                            />
+                        ))}
+                    </tbody>
+                </>
+            ) : (
+                <tbody className="no-courses">
+                    <tr>
+                        <td>No course available yet</td>
+                    </tr>
+                </tbody>
+            )}
+        </table>
+    );
 };
 
-const CourseListWithLogging = WithLogging(CourseList);
-
-export default CourseListWithLogging;
+export default CourseList;

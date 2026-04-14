@@ -1,22 +1,30 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import BodySectionWithMarginBottom from './BodySectionWithMarginBottom';
+import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
+import BodySectionWithMarginBottom from "./BodySectionWithMarginBottom";
 
-test('renders div with bodySectionWithMargin class', () => {
-  const { container } = render(
-    <BodySectionWithMarginBottom title="Test Title">
-      <p>Child</p>
-    </BodySectionWithMarginBottom>
-  );
-  expect(container.querySelector('.bodySectionWithMargin')).toBeInTheDocument();
-});
+describe("BodySectionWithMarginBottom Component", () => {
 
-test('renders BodySection component inside', () => {
-  render(
-    <BodySectionWithMarginBottom title="Test Title">
-      <p>Child</p>
-    </BodySectionWithMarginBottom>
-  );
-  expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Test Title');
-  expect(screen.getByText('Child')).toBeInTheDocument();
+    it("contains div with class bodySectionWithMargin", () => {
+        const { container } = render(
+            <BodySectionWithMarginBottom title="Test title">
+                <p>Child</p>
+            </BodySectionWithMarginBottom>
+        );
+
+        const div = container.querySelector(".bodySectionWithMargin");
+
+        expect(div).toBeInTheDocument();
+    });
+
+    it("renders the BodySection component", () => {
+        render(
+            <BodySectionWithMarginBottom title="Test title">
+                <p>Child content</p>
+            </BodySectionWithMarginBottom>
+        );
+
+        expect(screen.getByRole("heading")).toHaveTextContent("Test title");
+        expect(screen.getByText("Child content")).toBeInTheDocument();
+    });
+
 });

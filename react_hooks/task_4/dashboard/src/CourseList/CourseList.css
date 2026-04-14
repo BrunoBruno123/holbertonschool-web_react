@@ -1,26 +1,19 @@
-#CourseList {
-  width: 90%;
-  margin: 20px auto;
-  border-collapse: collapse;
+.table-cell {
+    border-bottom: 1px solid gray;
+    border-right: 1px solid gray;
 }
 
-#CourseList th {
-  background-color: #deb5b545;
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #e1003c;
+.course-list {
+    margin-top: 20px;
+    width: 100%;
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
 }
 
-#CourseList td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #e1003c;
+.courses-body {
+    height: 65vh;
 }
 
-#CourseList tr:nth-child(odd) {
-  background-color: #deb5b545;
-}
-
-#CourseList tr:nth-child(even) {
-  background-color: #fff;
+.no-courses {
+    margin-bottom: 1px solid gray;
 }
