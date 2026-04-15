@@ -18,70 +18,51 @@ export const initialState = {
   courses: [],
 };
 
-export function appReducer(state, action) {
-
-  if (state === undefined) {
-    return initialState;
-  }
-
+export function appReducer(state = initialState, action) {
   switch (action.type) {
-    case APP_ACTIONS.LOGIN: {
-      const email =
-        action.payload !== undefined ? action.payload.email : action.email;
-
-      const password =
-        action.payload !== undefined ? action.payload.password : action.password;
-
+    case APP_ACTIONS.LOGIN:
       return {
         ...state,
         user: {
-          email: email ?? "",
-          password: password ?? "",
+          email: action.payload.email,
+          password: action.payload.password,
           isLoggedIn: true,
         },
       };
-    }
 
     case APP_ACTIONS.LOGOUT:
       return {
         ...state,
-        user: initialState.user, 
+        user: initialState.user,
       };
 
     case APP_ACTIONS.TOGGLE_DRAWER:
       return {
         ...state,
-        displayDrawer:
-          action.payload !== undefined
-            ? action.payload
-            : !state.displayDrawer,
+        displayDrawer: action.payload,
       };
 
-    case APP_ACTIONS.MARK_NOTIFICATION_READ: {
-      const id =
-        action.payload !== undefined ? action.payload : action.id;
-
+    case APP_ACTIONS.MARK_NOTIFICATION_READ:
       return {
         ...state,
         notifications: state.notifications.filter(
-          (notification) => notification.id !== id
+          (n) => n.id !== action.payload
         ),
       };
-    }
 
     case APP_ACTIONS.SET_NOTIFICATIONS:
       return {
         ...state,
-        notifications: action.payload ?? action.notifications ?? [],
+        notifications: action.payload,
       };
 
     case APP_ACTIONS.SET_COURSES:
       return {
         ...state,
-        courses: action.payload ?? action.courses ?? [],
+        courses: action.payload, // ✅ STRICT (no fallback!)
       };
 
     default:
-      return state; 
+      return state;
   }
 }
