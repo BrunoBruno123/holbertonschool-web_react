@@ -18,7 +18,12 @@ export const initialState = {
   courses: [],
 };
 
-export function appReducer(state = initialState, action) {
+export function appReducer(state, action) {
+
+  if (state === undefined) {
+    return initialState;
+  }
+
   switch (action.type) {
     case APP_ACTIONS.LOGIN: {
       const email =
@@ -30,7 +35,6 @@ export function appReducer(state = initialState, action) {
       return {
         ...state,
         user: {
-          ...initialState.user, 
           email: email ?? "",
           password: password ?? "",
           isLoggedIn: true,
@@ -41,7 +45,7 @@ export function appReducer(state = initialState, action) {
     case APP_ACTIONS.LOGOUT:
       return {
         ...state,
-        user: { ...initialState.user }, 
+        user: initialState.user, 
       };
 
     case APP_ACTIONS.TOGGLE_DRAWER:
