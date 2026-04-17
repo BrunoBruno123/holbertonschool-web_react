@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import Footer from "./Footer";
+import AppContext from "../Context/context";
 import { getCurrentYear } from "../utils/utils";
 
 describe("Footer Component", () => {
@@ -14,21 +15,31 @@ describe("Footer Component", () => {
     });
 
     it("does NOT display contact link when logged out", () => {
-        render(<Footer user={{ isLoggedIn: false }} />);
+        const contextValue = {
+            user: { isLoggedIn: false },
+        };
+        render(
+            <AppContext.Provider value={contextValue}>
+                <Footer />
+            </AppContext.Provider>
+        );
         expect(
             screen.queryByRole("link", { name: /contact us/i })
         ).not.toBeInTheDocument();
     });
 
     it("displays contact link when logged in", () => {
+        const contextValue = {
+            user: {
+                email: "test@test.com",
+                password: "password123",
+                isLoggedIn: true,
+            },
+        };
         render(
-            <Footer
-                user={{
-                    email: "test@test.com",
-                    password: "password123",
-                    isLoggedIn: true,
-                }}
-            />
+            <AppContext.Provider value={contextValue}>
+                <Footer />
+            </AppContext.Provider>
         );
         expect(
             screen.getByRole("link", { name: /contact us/i })

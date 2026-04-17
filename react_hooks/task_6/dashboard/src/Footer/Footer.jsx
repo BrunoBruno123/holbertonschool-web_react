@@ -7,6 +7,7 @@ const Footer = ({ user = {} }) => {
             <p>
                 Copyright {getCurrentYear()} - {getFooterCopy(true)}
             </p>
+
             {user.isLoggedIn && (
                 <p>
                     <a href="#contact">Contact us</a>

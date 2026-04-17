@@ -1,7 +1,7 @@
 import logo from "../assets/holberton-logo.jpg";
 import "./Header.css";
 
-function Header({ user = {}, logOut = () => {} }) {
+function Header({ user = {}, logOut = () => { } }) {
     return (
         <>
             <div className="App-header">
@@ -12,7 +12,13 @@ function Header({ user = {}, logOut = () => {} }) {
             {user.isLoggedIn && (
                 <div id="logoutSection">
                     Welcome {user.email} (
-                    <a href="#logout" onClick={logOut}>
+                    <a
+                        href="#logout"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            logOut();
+                        }}
+                    >
                         logout
                     </a>
                     )

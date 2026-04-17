@@ -1,5 +1,12 @@
 import axios from "axios";
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useReducer,
+} from "react";
+
 import CourseList from "../CourseList/CourseList";
 import "../CourseList/CourseList.css";
 import Footer from "../Footer/Footer";
@@ -8,8 +15,10 @@ import Login from "../Login/Login";
 import Notifications from "../Notifications/Notifications";
 import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
+
 import { getLatestNotification } from "../utils/utils";
 import { appReducer, initialState, APP_ACTIONS } from "./appReducer";
+
 import "./App.css";
 
 function normalizeNotifications(data) {
@@ -22,9 +31,9 @@ function normalizeNotifications(data) {
   return nextNotifications.map((notification) =>
     notification.html
       ? {
-          ...notification,
-          html: { __html: getLatestNotification() },
-        }
+        ...notification,
+        html: { __html: getLatestNotification() },
+      }
       : notification
   );
 }
@@ -38,14 +47,16 @@ function normalizeCourses(data) {
 }
 
 function logDevelopmentError(error) {
-  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname === "localhost"
+  ) {
     console.error(error);
   }
 }
 
 const App = () => {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  const { displayDrawer, user, notifications, courses } = state;
   const removedNotificationIdsRef = useRef(new Set());
 
   useEffect(() => {
@@ -56,11 +67,13 @@ const App = () => {
         const { data } = await axios.get("/notifications.json");
 
         if (isMounted) {
-          const normalized = normalizeNotifications(data).filter(
-            (notification) =>
-              !removedNotificationIdsRef.current.has(notification.id)
-          );
-          dispatch({ type: APP_ACTIONS.SET_NOTIFICATIONS, payload: normalized });
+          dispatch({
+            type: APP_ACTIONS.SET_NOTIFICATIONS,
+            payload: normalizeNotifications(data).filter(
+              (notification) =>
+                !removedNotificationIdsRef.current.has(notification.id)
+            ),
+          });
         }
       } catch (error) {
         logDevelopmentError(error);
@@ -73,6 +86,7 @@ const App = () => {
       isMounted = false;
     };
   }, []);
+
 
   useEffect(() => {
     let isMounted = true;
@@ -92,23 +106,28 @@ const App = () => {
       }
     };
 
-    fetchCourses();
+    if (state.user.isLoggedIn) {
+      fetchCourses();
+    }
 
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [state.user.isLoggedIn]);
 
   const handleDisplayDrawer = useCallback(() => {
-    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: true });
+    dispatch({ type: APP_ACTIONS.OPEN_DRAWER });
   }, []);
 
   const handleHideDrawer = useCallback(() => {
-    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: false });
+    dispatch({ type: APP_ACTIONS.CLOSE_DRAWER });
   }, []);
 
   const logIn = useCallback((email, password) => {
-    dispatch({ type: APP_ACTIONS.LOGIN, payload: { email, password } });
+    dispatch({
+      type: APP_ACTIONS.LOGIN,
+      payload: { email, password },
+    });
   }, []);
 
   const logOut = useCallback(() => {
@@ -116,26 +135,31 @@ const App = () => {
   }, []);
 
   const markNotificationAsRead = useCallback((id) => {
-    removedNotificationIdsRef.current.add(id);
-    dispatch({ type: APP_ACTIONS.MARK_NOTIFICATION_READ, payload: id });
+    dispatch({
+      type: APP_ACTIONS.MARK_NOTIFICATION_READ,
+      payload: id,
+    });
   }, []);
 
   return (
-    <div className="notifications-header">
-      <Header user={user} logOut={logOut} />
-      <div className="root-notifications">
-        <Notifications
-          notifications={notifications}
-          displayDrawer={displayDrawer}
-          handleDisplayDrawer={handleDisplayDrawer}
-          handleHideDrawer={handleHideDrawer}
-          markNotificationAsRead={markNotificationAsRead}
-        />
+    <>
+      <div className="notifications-header">
+        <Header user={state.user} logOut={logOut} />
+
+        <div className="root-notifications">
+          <Notifications
+            notifications={state.notifications}
+            displayDrawer={state.displayDrawer}
+            handleDisplayDrawer={handleDisplayDrawer}
+            handleHideDrawer={handleHideDrawer}
+            markNotificationAsRead={markNotificationAsRead}
+          />
+        </div>
       </div>
 
-      {user.isLoggedIn ? (
+      {state.user.isLoggedIn ? (
         <BodySectionWithMarginBottom title="Course list">
-          <CourseList courses={courses} />
+          <CourseList courses={state.courses} />
         </BodySectionWithMarginBottom>
       ) : (
         <BodySectionWithMarginBottom title="Log in to continue">
@@ -147,8 +171,8 @@ const App = () => {
         <p>Holberton School News goes here</p>
       </BodySection>
 
-      <Footer user={user} />
-    </div>
+      <Footer user={state.user} />
+    </>
   );
 };
 

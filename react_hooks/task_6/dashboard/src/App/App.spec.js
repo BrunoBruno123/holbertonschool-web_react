@@ -1,10 +1,16 @@
+import { useContext } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import mockAxios from "axios";
+import AppContext from "../Context/context";
 
-// ── Mock Header ──────────────────────────────────────────────────────────────
 jest.mock("../Header/Header", () => {
-    function MockHeader({ user = {}, logOut }) {
+    const React = jest.requireActual("react");
+    const AppContext = jest.requireActual("../Context/context").default;
+
+    function MockHeader() {
+        const { user, logOut } = React.useContext(AppContext);
+
         return (
             <header>
                 <h1>School dashboard</h1>
@@ -17,10 +23,10 @@ jest.mock("../Header/Header", () => {
             </header>
         );
     }
+
     return MockHeader;
 });
 
-// ── Mock Login ───────────────────────────────────────────────────────────────
 jest.mock("../Login/Login", () => {
     function MockLogin({ logIn }) {
         return (
@@ -35,12 +41,17 @@ jest.mock("../Login/Login", () => {
             </div>
         );
     }
+
     return MockLogin;
 });
 
-// ── Mock Footer ──────────────────────────────────────────────────────────────
 jest.mock("../Footer/Footer", () => {
-    function MockFooter({ user = {} }) {
+    const React = jest.requireActual("react");
+    const AppContext = jest.requireActual("../Context/context").default;
+
+    function MockFooter() {
+        const { user } = React.useContext(AppContext);
+
         return (
             <footer>
                 <p>Copyright</p>
@@ -48,10 +59,10 @@ jest.mock("../Footer/Footer", () => {
             </footer>
         );
     }
+
     return MockFooter;
 });
 
-// ── Mock Notifications ───────────────────────────────────────────────────────
 jest.mock("../Notifications/Notifications", () => {
     const React = jest.requireActual("react");
 
@@ -132,7 +143,6 @@ jest.mock("../Notifications/Notifications", () => {
     return MockNotifications;
 });
 
-// ── Mock CourseList ──────────────────────────────────────────────────────────
 jest.mock("../CourseList/CourseList", () => {
     function MockCourseList({ courses }) {
         return (
@@ -148,10 +158,10 @@ jest.mock("../CourseList/CourseList", () => {
             </section>
         );
     }
+
     return MockCourseList;
 });
 
-// ── Mock BodySection ─────────────────────────────────────────────────────────
 jest.mock("../BodySection/BodySection", () => {
     function MockBodySection({ title, children }) {
         return (
@@ -161,6 +171,7 @@ jest.mock("../BodySection/BodySection", () => {
             </section>
         );
     }
+
     return MockBodySection;
 });
 
@@ -173,10 +184,10 @@ jest.mock("../BodySection/BodySectionWithMarginBottom", () => {
             </section>
         );
     }
+
     return MockBodySectionWithMarginBottom;
 });
 
-// ── Import after mocks ───────────────────────────────────────────────────────
 import App from "./App";
 
 describe("App Component", () => {
@@ -186,7 +197,9 @@ describe("App Component", () => {
         {
             id: 3,
             type: "urgent",
-            html: { __html: "<strong>This should be replaced</strong>" },
+            html: {
+                __html: "<strong>This should be replaced</strong>",
+            },
         },
     ];
     const coursesData = [
@@ -215,9 +228,11 @@ describe("App Component", () => {
             if (url === "/notifications.json") {
                 return Promise.resolve({ data: notificationsData });
             }
+
             if (url === "/courses.json") {
                 return Promise.resolve({ data: coursesData });
             }
+
             return Promise.reject(new Error(`Unexpected URL: ${url}`));
         });
     });
@@ -226,7 +241,18 @@ describe("App Component", () => {
         mockAxios.reset();
     });
 
-    // ── Render ───────────────────────────────────────────────────────────────
+    function ContextProbe() {
+        const { user } = useContext(AppContext);
+
+        return (
+            <>
+                <p data-testid="probe-email">{user.email}</p>
+                <p data-testid="probe-password">{user.password}</p>
+                <p data-testid="probe-logged-in">{String(user.isLoggedIn)}</p>
+            </>
+        );
+    }
+
     it("renders the main sections", async () => {
         await renderApp();
 
@@ -237,7 +263,6 @@ describe("App Component", () => {
         expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
     });
 
-    // ── Notifications fetch ───────────────────────────────────────────────────
     it("retrieves notifications data when the app loads", async () => {
         await renderApp();
 
@@ -247,7 +272,6 @@ describe("App Component", () => {
         });
     });
 
-    // ── Courses fetch on user change ──────────────────────────────────────────
     it("retrieves courses data whenever the user state changes", async () => {
         const user = userEvent.setup();
         await renderApp();
@@ -270,16 +294,27 @@ describe("App Component", () => {
         });
     });
 
-    // ── Initial state ─────────────────────────────────────────────────────────
-    it("initializes the app with empty/logged-out user state", async () => {
-        await renderApp();
+    it("initializes the app with the context user object", async () => {
+        render(
+            <>
+                <App />
+                <ContextProbe />
+            </>
+        );
+
+        await waitFor(() => {
+            expect(mockAxios.get).toHaveBeenCalled();
+        });
 
         expect(screen.getByTestId("header-email")).toHaveTextContent("");
         expect(screen.getByTestId("header-password")).toHaveTextContent("");
         expect(screen.getByTestId("header-logged-in")).toHaveTextContent("false");
+
+        expect(screen.getByTestId("probe-email")).toHaveTextContent("");
+        expect(screen.getByTestId("probe-password")).toHaveTextContent("");
+        expect(screen.getByTestId("probe-logged-in")).toHaveTextContent("false");
     });
 
-    // ── Drawer toggle ─────────────────────────────────────────────────────────
     it("handles display drawer show and hide actions", async () => {
         const user = userEvent.setup();
         await renderApp();
@@ -297,7 +332,6 @@ describe("App Component", () => {
         expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
     });
 
-    // ── Callback stability ────────────────────────────────────────────────────
     it("keeps notification handlers stable across re-renders", async () => {
         const user = userEvent.setup();
         await renderApp();
@@ -325,7 +359,6 @@ describe("App Component", () => {
         });
     });
 
-    // ── Login ─────────────────────────────────────────────────────────────────
     it("updates user state on logIn", async () => {
         const user = userEvent.setup();
         await renderApp();
@@ -344,7 +377,6 @@ describe("App Component", () => {
         ).toBeInTheDocument();
     });
 
-    // ── Logout ────────────────────────────────────────────────────────────────
     it("resets user state on logOut", async () => {
         const user = userEvent.setup();
         await renderApp();
@@ -364,7 +396,6 @@ describe("App Component", () => {
         ).not.toBeInTheDocument();
     });
 
-    // ── Mark notification as read ─────────────────────────────────────────────
     it("removes notification when marked as read", async () => {
         const user = userEvent.setup();
         await renderApp();
@@ -380,7 +411,6 @@ describe("App Component", () => {
         expect(screen.queryByText("New course available")).not.toBeInTheDocument();
     });
 
-    // ── Removed notification not restored by delayed fetch ────────────────────
     it("does not restore a removed notification when the fetch resolves later", async () => {
         const user = userEvent.setup();
         let resolveNotifications;
@@ -392,9 +422,11 @@ describe("App Component", () => {
             if (url === "/notifications.json") {
                 return delayedNotifications;
             }
+
             if (url === "/courses.json") {
                 return Promise.resolve({ data: coursesData });
             }
+
             return Promise.reject(new Error(`Unexpected URL: ${url}`));
         });
 
