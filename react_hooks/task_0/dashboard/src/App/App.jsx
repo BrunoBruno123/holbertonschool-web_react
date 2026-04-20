@@ -126,7 +126,7 @@ class App extends Component {
           )}
 
           <BodySection title="News from the School">
-            <p>Holberton School News goes here</p>
+            <p>Holberton School News goes here</p>  
           </BodySection>
 
           <Footer />
