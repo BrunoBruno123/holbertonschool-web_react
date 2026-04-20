@@ -1,12 +1,10 @@
-import { Map, List } from 'immutable';
+/* eslint-disable */
+import { List, Map } from 'immutable';
 
-function concatElements(page1, page2) {
-    const map_one = List(page1);const map_two = List(page2);
-    return map_one.concat(map_two);
+export function concatElements(page1, page2) {
+  return List(page1).concat(List(page2));
 }
 
-function mergeElements(page1, page2) {
-    const map_one = Map(page1);
-    const map_two = Map(page2);
-    return map_one.merge(map_two);
+export function mergeElements(page1, page2) {
+  return Map(page1).merge(Map(page2));
 }
